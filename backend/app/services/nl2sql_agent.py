@@ -35,7 +35,10 @@ SQL best practices you MUST follow for accurate results:
 - Always CAST text/string columns to the appropriate type (TIMESTAMP, DATE, NUMERIC) before
   doing arithmetic or comparisons on them.
 - Prefer CTEs (WITH ... AS) for multi-step logic to keep queries readable and correct.
-- For splitting data into halves, use ROW_NUMBER() and CEIL/FLOOR with COUNT().
+- For splitting data into halves, use ROW_NUMBER() with FLOOR(count / 2.0) as the boundary.
+  First half = rows where rn <= FLOOR(total / 2.0), second half = the rest.
+  This ensures that when the count is odd, the extra row goes to the SECOND half.
+  NEVER use CEIL for the first-half boundary — that incorrectly puts the extra row in the first half.
 - For finding the most common value (mode), use COUNT + RANK or ROW_NUMBER with ORDER BY count DESC.
 - CRITICAL PostgreSQL rule: You CANNOT reference a column alias from SELECT in WHERE or HAVING
   of the SAME query level. Either wrap it in a CTE/subquery and filter in the outer query,
