@@ -92,10 +92,14 @@ async def generate_sql(
         agent_type="openai-tools",
         prefix=prefix,
         verbose=False,
+        agent_executor_kwargs={"max_iterations": 5},
     )
 
     await log.ainfo("generating_sql", nl_query=nl_query)
-    result = await agent_executor.ainvoke({"input": nl_query})
+    result = await agent_executor.ainvoke(
+        {"input": nl_query},
+        config={"configurable": {"timeout": 120}},
+    )
     raw_output = result.get("output", "")
 
     # Extract SQL from response — agent may wrap it in markdown
