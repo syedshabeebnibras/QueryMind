@@ -413,7 +413,7 @@ _DESIGN_TOKENS = """
     }
     .qm-landing-nav .brand-text {
         font-family: var(--font-display);
-        font-size: var(--text-md); font-weight: var(--font-weight-semibold);
+        font-size: var(--text-lg); font-weight: var(--font-weight-semibold);
         color: var(--qm-text-primary);
         letter-spacing: -0.03em;
     }
@@ -422,7 +422,7 @@ _DESIGN_TOKENS = """
     }
     .qm-landing-nav .nav-links a {
         font-family: var(--font-body);
-        font-size: var(--text-sm); font-weight: var(--font-weight-normal);
+        font-size: var(--text-base); font-weight: var(--font-weight-normal);
         color: var(--qm-text-tertiary);
         text-decoration: none; letter-spacing: 0em;
         padding: 4px 0;
@@ -448,8 +448,8 @@ _DESIGN_TOKENS = """
     /* ── Hero ── */
     .qm-landing-hero {
         text-align: center;
-        padding: 7rem 2rem 4.5rem 2rem;
-        max-width: 760px;
+        padding: 8rem 2rem 5rem 2rem;
+        max-width: 860px;
         margin: 0 auto;
         position: relative;
         animation: fadeSlideUp 0.7s 0.15s var(--qm-spring-soft) both;
@@ -457,48 +457,46 @@ _DESIGN_TOKENS = """
     .qm-landing-hero::before {
         content: '';
         position: absolute;
-        top: -60px; left: 50%;
+        top: -80px; left: 50%;
         transform: translateX(-50%);
-        width: 500px; height: 400px;
-        background: radial-gradient(ellipse, rgba(157,163,173,0.04) 0%, transparent 70%);
+        width: 600px; height: 500px;
+        background: radial-gradient(ellipse, rgba(0,122,255,0.03) 0%, transparent 70%);
         pointer-events: none;
     }
     .qm-landing-hero .badge {
-        display: inline-flex; align-items: center; gap: 6px;
+        display: inline-flex; align-items: center; gap: 7px;
         font-family: var(--font-body);
-        font-size: var(--text-xs); font-weight: var(--font-weight-medium);
-        letter-spacing: 1.2px; text-transform: uppercase;
+        font-size: var(--text-sm); font-weight: var(--font-weight-medium);
+        letter-spacing: 0.8px; text-transform: uppercase;
         color: var(--chart-1);
-        background: linear-gradient(135deg, rgba(0,122,255,0.1) 0%, rgba(94,92,230,0.06) 100%);
-        border: 0.5px solid rgba(0, 122, 255, 0.15);
-        padding: 6px 16px;
+        background: linear-gradient(135deg, rgba(0,122,255,0.08) 0%, rgba(94,92,230,0.04) 100%);
+        border: 0.5px solid rgba(0, 122, 255, 0.12);
+        padding: 8px 20px;
         border-radius: 24px;
-        margin-bottom: 2rem;
-        animation: pulseGlow 4s ease infinite;
-        backdrop-filter: blur(8px);
+        margin-bottom: 2.5rem;
     }
     .qm-landing-hero .badge::before {
         content: '';
-        width: 5px; height: 5px;
+        width: 6px; height: 6px;
         border-radius: 50%;
         background: var(--chart-1);
-        animation: dotPulse 2s ease infinite;
+        box-shadow: 0 0 6px var(--glow-primary);
     }
     .qm-landing-hero h1 {
         font-family: var(--font-display);
-        font-size: var(--text-hero); font-weight: var(--font-weight-bold);
-        letter-spacing: -0.04em; line-height: var(--leading-tight);
-        color: var(--qm-text-primary);
-        margin: 0 0 1.5rem 0;
+        font-size: 4.5rem; font-weight: 700;
+        letter-spacing: -0.045em; line-height: 1.05;
+        color: var(--foreground);
+        margin: 0 0 2rem 0;
     }
     .qm-landing-hero h1 .gradient-text {
         background: linear-gradient(
             135deg,
-            #e8e8ea 0%,
-            #007aff 25%,
-            #5e5ce6 50%,
-            #007aff 75%,
-            #e8e8ea 100%
+            #f0f0f2 0%,
+            #007aff 30%,
+            #5e5ce6 55%,
+            #007aff 80%,
+            #f0f0f2 100%
         );
         background-size: 300% auto;
         -webkit-background-clip: text;
@@ -508,11 +506,11 @@ _DESIGN_TOKENS = """
     }
     .qm-landing-hero p {
         font-family: var(--font-body);
-        font-size: var(--text-lg); font-weight: var(--font-weight-normal);
+        font-size: 1.25rem; font-weight: var(--font-weight-normal);
         color: var(--qm-text-secondary);
-        line-height: var(--leading-relaxed);
-        margin: 0 auto 3rem auto;
-        max-width: 540px;
+        line-height: 1.6;
+        margin: 0 auto 3.5rem auto;
+        max-width: 580px;
     }
 
     /* ── CTA ── */
@@ -525,16 +523,16 @@ _DESIGN_TOKENS = """
     .qm-features {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 1rem;
-        max-width: 940px;
+        gap: 1.25rem;
+        max-width: 1000px;
         margin: 0 auto;
-        padding: 0 2rem 5rem 2rem;
+        padding: 0 2.5rem 6rem 2.5rem;
     }
     .qm-feature-card {
         background: linear-gradient(180deg, rgba(22,22,25,0.8) 0%, rgba(22,22,25,0.4) 100%);
         border: 0.5px solid var(--qm-border);
         border-radius: var(--qm-radius-lg);
-        padding: 2rem 1.5rem;
+        padding: 2.25rem 1.75rem;
         position: relative;
         overflow: hidden;
         transition: all 0.4s var(--qm-spring-soft);
@@ -572,8 +570,8 @@ _DESIGN_TOKENS = """
     .qm-feature-card:hover::before,
     .qm-feature-card:hover::after { opacity: 1; }
     .qm-feature-card .icon {
-        width: 40px; height: 40px;
-        border-radius: 11px;
+        width: 44px; height: 44px;
+        border-radius: 12px;
         background: linear-gradient(145deg, var(--qm-bg-surface), var(--qm-bg-elevated));
         border: 0.5px solid rgba(255,255,255,0.05);
         display: flex; align-items: center; justify-content: center;
@@ -588,56 +586,58 @@ _DESIGN_TOKENS = """
     }
     .qm-feature-card h3 {
         font-family: var(--font-display);
-        font-size: var(--text-base); font-weight: var(--font-weight-semibold);
+        font-size: var(--text-md); font-weight: var(--font-weight-semibold);
         color: var(--qm-text-primary);
-        margin: 0 0 0.5rem 0;
+        margin: 0 0 0.6rem 0;
         letter-spacing: -0.02em;
         transition: color 0.2s ease;
     }
     .qm-feature-card:hover h3 { color: #fff; }
     .qm-feature-card p {
         font-family: var(--font-body);
-        font-size: var(--text-sm); font-weight: var(--font-weight-normal);
+        font-size: var(--text-base); font-weight: var(--font-weight-normal);
         color: var(--qm-text-secondary);
-        line-height: var(--leading-relaxed); margin: 0;
+        line-height: 1.6; margin: 0;
     }
 
     /* ── Section headings ── */
     .qm-section-heading {
         text-align: center;
-        padding: 4rem 2rem 2.5rem 2rem;
+        padding: 5rem 2rem 3rem 2rem;
         animation: fadeSlideUp 0.55s var(--qm-spring-soft) both;
     }
     .qm-section-heading h2 {
         font-family: var(--font-display);
-        font-size: var(--text-2xl); font-weight: var(--font-weight-semibold);
+        font-size: 2.25rem; font-weight: 650;
         letter-spacing: -0.03em;
-        color: var(--qm-text-primary);
-        margin: 0 0 0.6rem 0;
+        color: var(--foreground);
+        margin: 0 0 0.75rem 0;
+        line-height: 1.15;
     }
     .qm-section-heading p {
         font-family: var(--font-body);
-        font-size: var(--text-base);
+        font-size: var(--text-lg);
         color: var(--qm-text-tertiary);
         margin: 0;
+        line-height: 1.5;
     }
 
     /* ── Tech pills ── */
     .qm-tech-grid {
-        display: flex; flex-wrap: wrap; gap: 0.6rem;
+        display: flex; flex-wrap: wrap; gap: 0.75rem;
         justify-content: center;
-        max-width: 720px;
+        max-width: 760px;
         margin: 0 auto;
-        padding: 0 2rem 5rem 2rem;
+        padding: 0 2rem 6rem 2rem;
         animation: fadeSlideUp 0.5s 0.2s var(--qm-spring-soft) both;
     }
     .qm-tech-pill {
         font-family: var(--font-body);
-        font-size: var(--text-sm); font-weight: var(--font-weight-medium);
+        font-size: var(--text-base); font-weight: var(--font-weight-medium);
         color: var(--qm-text-secondary);
         background: var(--qm-bg-raised);
         border: 0.5px solid var(--qm-border);
-        padding: 7px 16px;
+        padding: 9px 20px;
         border-radius: 22px;
         letter-spacing: 0.2px;
         transition: all 0.3s var(--qm-spring-soft);
@@ -655,15 +655,15 @@ _DESIGN_TOKENS = """
     .qm-security-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 0.75rem;
-        max-width: 720px;
+        gap: 1rem;
+        max-width: 780px;
         margin: 0 auto;
-        padding: 0 2rem 5rem 2rem;
+        padding: 0 2rem 6rem 2rem;
         animation: fadeSlideUp 0.5s 0.2s var(--qm-spring-soft) both;
     }
     .qm-security-item {
-        display: flex; gap: 0.75rem; align-items: flex-start;
-        padding: 1.15rem 1.25rem;
+        display: flex; gap: 0.85rem; align-items: flex-start;
+        padding: 1.35rem 1.5rem;
         background: linear-gradient(180deg, var(--qm-bg-raised) 0%, rgba(22,22,25,0.6) 100%);
         border: 0.5px solid var(--qm-border);
         border-radius: var(--qm-radius-md);
@@ -691,21 +691,21 @@ _DESIGN_TOKENS = """
     .qm-security-item:nth-child(6) .dot { animation-delay: 2.5s; }
     .qm-security-item .text h4 {
         font-family: var(--font-display);
-        font-size: var(--text-sm); font-weight: var(--font-weight-semibold);
-        color: var(--qm-text-primary);
-        margin: 0 0 0.3rem 0;
+        font-size: var(--text-base); font-weight: var(--font-weight-semibold);
+        color: var(--foreground);
+        margin: 0 0 0.35rem 0;
     }
     .qm-security-item .text p {
         font-family: var(--font-body);
-        font-size: var(--text-xs);
+        font-size: var(--text-sm);
         color: var(--qm-text-tertiary);
-        margin: 0; line-height: 1.55;
+        margin: 0; line-height: 1.6;
     }
 
     /* ── Footer ── */
     .qm-footer {
         text-align: center;
-        padding: 3.5rem 2rem;
+        padding: 4.5rem 2rem;
         border-top: 0.5px solid var(--qm-border);
         animation: fadeIn 0.5s 0.4s var(--qm-spring-soft) both;
         position: relative;
@@ -719,7 +719,7 @@ _DESIGN_TOKENS = """
     }
     .qm-footer p {
         font-family: var(--font-body);
-        font-size: var(--text-sm);
+        font-size: var(--text-base);
         color: var(--qm-text-ghost);
         margin: 0; letter-spacing: 0.3px;
     }
@@ -808,12 +808,13 @@ _DESIGN_TOKENS = """
         font-weight: var(--font-weight-medium) !important;
         font-size: var(--text-base) !important;
         letter-spacing: 0.1px !important;
-        padding: 0.7rem 1.5rem !important;
+        padding: 0.8rem 2rem !important;
         position: relative !important;
         overflow: hidden !important;
         transition: all 0.25s var(--qm-spring-soft) !important;
         box-shadow: var(--qm-shadow-sm),
                     inset 0 1px 0 rgba(255,255,255,0.05) !important;
+        min-height: 48px !important;
     }
     .stButton > button[kind="primary"]::before,
     .stButton > button[data-testid="stBaseButton-primary"]::before {
@@ -1275,17 +1276,18 @@ _DESIGN_TOKENS = """
 
     /* ── Responsive ── */
     @media (max-width: 768px) {
-        .qm-landing-hero h1 { font-size: var(--text-3xl); letter-spacing: -0.03em; }
-        .qm-landing-hero p { font-size: var(--text-base); }
-        .qm-features { grid-template-columns: 1fr; }
-        .qm-security-grid { grid-template-columns: 1fr; }
-        .qm-landing-nav { padding: 0.75rem 1.25rem; }
-        .qm-landing-nav .nav-links { gap: 1rem; }
-        .qm-landing-nav .nav-links a { font-size: var(--text-xs); }
-        .qm-landing-hero { padding: 4rem 1.5rem 3rem 1.5rem; }
+        .qm-landing-hero h1 { font-size: 2.75rem; letter-spacing: -0.035em; }
+        .qm-landing-hero p { font-size: var(--text-md); }
+        .qm-features { grid-template-columns: 1fr; max-width: 480px; }
+        .qm-security-grid { grid-template-columns: 1fr; max-width: 480px; }
+        .qm-landing-nav { padding: 0.75rem 1.5rem; }
+        .qm-landing-nav .nav-links { gap: 1.25rem; }
+        .qm-landing-nav .nav-links a { font-size: var(--text-sm); }
+        .qm-landing-hero { padding: 5rem 1.5rem 3.5rem 1.5rem; }
+        .qm-section-heading h2 { font-size: 1.75rem; }
     }
     @media (max-width: 480px) {
-        .qm-landing-hero h1 { font-size: var(--text-2xl); }
+        .qm-landing-hero h1 { font-size: 2.125rem; }
         .qm-landing-nav .nav-links { display: none; }
     }
 </style>
