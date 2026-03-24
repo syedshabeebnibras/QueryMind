@@ -1,10 +1,12 @@
 services:
   - type: web
     name: querymind-backend
-    runtime: docker
+    runtime: python
     plan: free
+    region: oregon
     rootDir: backend
-    dockerfilePath: ./Dockerfile
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: DATABASE_URL
         sync: false
@@ -12,5 +14,5 @@ services:
         sync: false
       - key: OPENAI_API_KEY
         sync: false
-      - key: PORT
-        value: "8000"
+      - key: PYTHON_VERSION
+        value: "3.11.11"
