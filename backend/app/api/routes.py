@@ -183,6 +183,48 @@ async def import_table(
         return TableDataResponse(status="error", error=f"Import error: {e}")
 
 
+# --- Tables listing ---
+
+
+@router.get("/tables")
+async def list_tables(
+    connection_id: str | None = None,
+    db: AsyncSession = Depends(get_db),
+) -> list[dict]:
+    """List all user tables in the target database with row counts."""
+    import psycopg2
+
+    target_url: str | None = None
+    if connection_id:
+        result = await db.execute(
+            select(Connection).where(Connection.id == uuid.UUID(connection_id))
+        )
+        conn = result.scalar_one_or_none()
+        if not conn:
+            raise HTTPException(status_code=404, detail="Connection not found")
+        target_url = conn.database_url
+
+    db_url = target_url or settings.target_database_url
+    pg_conn = psycopg2.connect(db_url)
+    try:
+        with pg_conn.cursor() as cur:
+            cur.execute("""
+                SELECT t.table_name,
+                       (SELECT count(*) FROM information_schema.columns c
+                        WHERE c.table_name = t.table_name AND c.table_schema = 'public') AS column_count
+                FROM information_schema.tables t
+                WHERE t.table_schema = 'public' AND t.table_type = 'BASE TABLE'
+                ORDER BY t.table_name
+            """)
+            tables = []
+            for row in cur.fetchall():
+                tables.append({"table_name": row[0], "column_count": row[1]})
+    finally:
+        pg_conn.close()
+
+    return tables
+
+
 # --- Schema setup ---
 
 

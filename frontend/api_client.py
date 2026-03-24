@@ -29,6 +29,17 @@ async def run_query(
         return resp.json()
 
 
+async def get_tables(connection_id: str | None = None) -> list[dict[str, Any]]:
+    """GET /tables — list tables in the target database."""
+    async with httpx.AsyncClient(timeout=30) as client:
+        params: dict[str, Any] = {}
+        if connection_id:
+            params["connection_id"] = connection_id
+        resp = await client.get(f"{BACKEND_URL}/tables", params=params)
+        resp.raise_for_status()
+        return resp.json()
+
+
 async def get_connections() -> list[dict[str, Any]]:
     """GET /connections — list available target connections."""
     async with httpx.AsyncClient(timeout=30) as client:

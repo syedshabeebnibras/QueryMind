@@ -17,6 +17,7 @@ from api_client import (
     delete_connection,
     get_connections,
     get_history,
+    get_tables,
     health_check,
     import_table,
     run_query,
@@ -126,9 +127,20 @@ with st.sidebar:
 
 # --- Main: Data Setup ---
 st.subheader("1. Provide Your Data")
-st.caption("Paste a table, CSV, or SQL — it will be added to the database so you can query it.")
+st.caption("Upload multiple tables, then ask questions across all of them.")
 
-paste_tab, sql_tab, upload_tab = st.tabs(["Paste Table", "Write SQL", "Upload File"])
+# Show existing tables
+conn_id = selected_connection["id"] if selected_connection else None
+try:
+    existing_tables = asyncio.run(get_tables(connection_id=conn_id))
+    if existing_tables:
+        with st.expander(f"Tables in database ({len(existing_tables)})", expanded=False):
+            for t in existing_tables:
+                st.text(f"  {t['table_name']} ({t['column_count']} columns)")
+except Exception:
+    existing_tables = []
+
+paste_tab, sql_tab, upload_tab = st.tabs(["Paste Table", "Write SQL", "Upload Files"])
 
 with paste_tab:
     table_name = st.text_input(
@@ -207,56 +219,59 @@ INSERT INTO widget_production VALUES
             st.warning("Please provide SQL statements first.")
 
 with upload_tab:
-    uploaded_file = st.file_uploader(
-        "Upload a .sql or .csv file",
+    uploaded_files = st.file_uploader(
+        "Upload .sql, .csv, or .tsv files (multiple allowed)",
         type=["sql", "txt", "csv", "tsv"],
         key="file_upload",
+        accept_multiple_files=True,
     )
-    upload_table_name = st.text_input("Table name:", value="uploaded_table", key="upload_table_name")
-    if uploaded_file is not None:
-        # Read file once and cache in session_state to survive reruns
-        if (
-            "uploaded_file_content" not in st.session_state
-            or st.session_state.get("uploaded_file_name") != uploaded_file.name
-        ):
-            st.session_state["uploaded_file_content"] = uploaded_file.read().decode("utf-8")
-            st.session_state["uploaded_file_name"] = uploaded_file.name
+    if uploaded_files:
+        # Cache file contents
+        cached_files = []
+        for uf in uploaded_files:
+            cache_key = f"file_cache_{uf.name}_{uf.size}"
+            if cache_key not in st.session_state:
+                st.session_state[cache_key] = uf.read().decode("utf-8")
+            cached_files.append((uf.name, st.session_state[cache_key]))
 
-        file_content = st.session_state["uploaded_file_content"]
-        file_name = st.session_state["uploaded_file_name"]
+        # Show preview for each file
+        for fname, content in cached_files:
+            lines = content.strip().split("\n")
+            is_sql = fname.endswith(".sql")
+            table_name = fname.rsplit(".", 1)[0].replace(" ", "_").replace("-", "_").lower()
+            with st.expander(f"{fname} — ~{len(lines) - 1} rows | {len(content):,} chars"):
+                st.code(content[:1000], language="sql" if is_sql else "text")
 
-        # Show preview and row count
-        lines = file_content.strip().split("\n")
-        st.caption(f"Rows: ~{len(lines) - 1} | Size: {len(file_content):,} chars")
-        st.code(file_content[:2000], language="sql" if file_name.endswith(".sql") else "text")
-
-        if st.button("Import File", type="secondary", key="upload_import_btn"):
+        if st.button("Import All Files", type="secondary", key="upload_import_btn"):
             conn_id = selected_connection["id"] if selected_connection else None
-            with st.spinner("Importing..."):
+            progress = st.progress(0, text="Importing...")
+            total = len(cached_files)
+            for idx, (fname, content) in enumerate(cached_files):
+                is_sql = fname.endswith(".sql")
+                table_name = fname.rsplit(".", 1)[0].replace(" ", "_").replace("-", "_").lower()
+                progress.progress((idx) / total, text=f"Importing {fname}...")
                 try:
-                    if file_name.endswith(".sql"):
-                        result = asyncio.run(setup_schema(file_content, connection_id=conn_id))
+                    if is_sql:
+                        result = asyncio.run(setup_schema(content, connection_id=conn_id))
                         if result["status"] == "success":
-                            st.success(f"Done! {result['statements_executed']} statement(s) executed.")
+                            st.success(f"{fname}: {result['statements_executed']} statement(s) executed.")
                         else:
-                            st.error(f"Failed: {result.get('error')}")
+                            st.error(f"{fname}: {result.get('error')}")
                     else:
                         result = asyncio.run(
-                            import_table(file_content, upload_table_name.strip(), connection_id=conn_id)
+                            import_table(content, table_name, connection_id=conn_id)
                         )
                         if result["status"] == "success":
                             st.success(
-                                f"Table **{result['table_name']}** created with "
-                                f"{len(result['columns'])} columns and ~{result['row_count']} rows!"
+                                f"{fname} → **{result['table_name']}** "
+                                f"({len(result['columns'])} cols, ~{result['row_count']} rows)"
                             )
                         else:
-                            st.error(f"Import failed: {result.get('error')}")
+                            st.error(f"{fname}: {result.get('error')}")
                 except Exception as e:
-                    st.error(f"Error: {e}")
-    else:
-        # Clear cached content when file is removed
-        st.session_state.pop("uploaded_file_content", None)
-        st.session_state.pop("uploaded_file_name", None)
+                    st.error(f"{fname}: {e}")
+            progress.progress(1.0, text="Done!")
+            st.rerun()
 
 st.divider()
 
