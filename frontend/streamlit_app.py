@@ -319,7 +319,7 @@ _DESIGN_TOKENS = """
         background: linear-gradient(145deg, var(--qm-bg-surface) 0%, var(--qm-bg-raised) 100%);
         border: 0.5px solid rgba(255,255,255,0.06);
         display: flex; align-items: center; justify-content: center;
-        font-size: 0.9rem; font-weight: 700; color: var(--qm-accent-bright);
+        font-size: var(--text-sm); font-weight: var(--font-weight-semibold); color: var(--qm-accent-bright);
         box-shadow: var(--qm-shadow-sm), inset 0 1px 0 rgba(255,255,255,0.04);
         transition: all 0.3s var(--qm-spring);
     }
@@ -493,7 +493,7 @@ _DESIGN_TOKENS = """
         background: linear-gradient(145deg, var(--qm-bg-surface), var(--qm-bg-elevated));
         border: 0.5px solid rgba(255,255,255,0.05);
         display: flex; align-items: center; justify-content: center;
-        font-size: 1.05rem;
+        font-size: var(--text-md);
         margin-bottom: 1.25rem;
         box-shadow: var(--qm-shadow-sm);
         transition: all 0.35s var(--qm-spring);
@@ -670,7 +670,7 @@ _DESIGN_TOKENS = """
         background: linear-gradient(145deg, var(--qm-bg-surface), var(--qm-bg-raised));
         border: 0.5px solid var(--qm-border);
         display: flex; align-items: center; justify-content: center;
-        font-size: 0.78rem; font-weight: 700; color: var(--qm-accent-bright);
+        font-size: var(--text-sm); font-weight: var(--font-weight-semibold); color: var(--qm-accent-bright);
         box-shadow: var(--qm-shadow-sm);
         transition: all 0.3s var(--qm-spring);
     }
@@ -678,7 +678,7 @@ _DESIGN_TOKENS = """
         transform: scale(1.08);
     }
     .qm-ws-header .brand-text {
-        font-size: 0.92rem; font-weight: 620;
+        font-size: var(--text-base); font-weight: var(--font-weight-semibold);
         color: var(--qm-text-primary);
         letter-spacing: -0.3px;
     }
@@ -891,7 +891,7 @@ _DESIGN_TOKENS = """
     }
     .qm-table-item:hover { color: var(--qm-text-primary); }
     .qm-table-item code {
-        font-size: 0.76rem;
+        font-size: var(--text-xs);
         color: rgba(240, 240, 243, 0.65);
         background: rgba(255, 255, 255, 0.04);
         padding: 2px 7px; border-radius: 5px;
@@ -904,7 +904,7 @@ _DESIGN_TOKENS = """
     }
     .qm-table-item .cols {
         color: var(--qm-text-tertiary);
-        font-size: 0.7rem; margin-left: 4px;
+        font-size: var(--text-xs); margin-left: 4px;
     }
 
     /* ── Result labels ── */
@@ -1197,7 +1197,7 @@ _DESIGN_TOKENS = """
         .qm-security-grid { grid-template-columns: 1fr; }
         .qm-landing-nav { padding: 0.75rem 1.25rem; }
         .qm-landing-nav .nav-links { gap: 1rem; }
-        .qm-landing-nav .nav-links a { font-size: 0.72rem; }
+        .qm-landing-nav .nav-links a { font-size: var(--text-xs); }
         .qm-landing-hero { padding: 4rem 1.5rem 3rem 1.5rem; }
     }
     @media (max-width: 480px) {
