@@ -44,34 +44,12 @@ st.set_page_config(page_title="QueryMind", page_icon="Q", layout="wide")
 # ──────────────────────────────────────────────────────────────
 _DESIGN_TOKENS = """
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
     :root {
-        /* ── Typography — Apple-style system ── */
-        --font-display:      -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
-        --font-body:         -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
-        --font-mono:         "SF Mono", SFMono-Regular, ui-monospace, Menlo, Monaco, Consolas, monospace;
-        --font-weight-light: 300;
+        /* ── Typography ── */
         --font-weight-normal: 400;
         --font-weight-medium: 500;
-        --font-weight-semibold: 590;
-        --font-weight-bold:  680;
-
-        /* ── Type scale (Apple-inspired, larger base) ── */
-        --text-xs:   0.75rem;    /* 12px */
-        --text-sm:   0.8125rem;  /* 13px */
-        --text-base: 0.9375rem;  /* 15px — Apple body size */
-        --text-md:   1rem;       /* 16px */
-        --text-lg:   1.125rem;   /* 18px */
-        --text-xl:   1.3125rem;  /* 21px */
-        --text-2xl:  1.75rem;    /* 28px */
-        --text-3xl:  2.25rem;    /* 36px */
-        --text-4xl:  3rem;       /* 48px */
-        --text-hero: 3.75rem;    /* 60px */
-
-        /* ── Line heights ── */
-        --leading-tight:  1.1;
-        --leading-snug:   1.2;
-        --leading-normal: 1.5;
-        --leading-relaxed: 1.65;
 
         /* ── Syntactic Slate — Core palette ── */
         --background:       #0a0a0b;
@@ -135,7 +113,9 @@ _DESIGN_TOKENS = """
         --qm-radius-md:     calc(var(--radius) + 2px);
         --qm-radius-lg:     calc(var(--radius) + 6px);
         --qm-radius-xl:     calc(var(--radius) + 12px);
-        --qm-font:          var(--font-body);
+        --qm-font:          'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+                             'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+                             'Helvetica Neue', sans-serif;
         --qm-spring:        cubic-bezier(0.175, 0.885, 0.32, 1.275);
         --qm-spring-soft:   cubic-bezier(0.16, 1, 0.3, 1);
         --qm-ease:          cubic-bezier(0.4, 0, 0.2, 1);
@@ -170,166 +150,15 @@ _DESIGN_TOKENS = """
         border-radius: var(--radius);
     }
 
-    /* ── Reset & global typography ── */
+    /* ── Reset ── */
     #MainMenu, footer, header { visibility: hidden; }
     .stDeployButton { display: none; }
-
     html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {
-        font-family: var(--font-body);
+        font-family: var(--qm-font);
         font-weight: var(--font-weight-normal);
-        font-size: var(--text-base);
-        line-height: var(--leading-normal);
-        letter-spacing: -0.01em;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        text-rendering: optimizeLegibility;
     }
-
-    /* ── Headings — SF Pro Display style ── */
-    h1, h2, h3, h4, h5, h6,
-    .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
-        font-family: var(--font-display);
-        letter-spacing: -0.025em;
-        line-height: var(--leading-tight);
-    }
-    h1, .stMarkdown h1 {
-        font-size: var(--text-4xl);
-        font-weight: var(--font-weight-bold);
-        letter-spacing: -0.035em;
-    }
-    h2, .stMarkdown h2 {
-        font-size: var(--text-2xl);
-        font-weight: var(--font-weight-semibold);
-        letter-spacing: -0.03em;
-    }
-    h3, .stMarkdown h3 {
-        font-size: var(--text-xl);
-        font-weight: var(--font-weight-semibold);
-        letter-spacing: -0.02em;
-    }
-
-    /* ── Body text ── */
-    p, li, span, label,
-    .stMarkdown p, .stMarkdown li {
-        font-family: var(--font-body);
-        font-size: var(--text-base);
-        font-weight: var(--font-weight-normal);
-        line-height: var(--leading-relaxed);
-        letter-spacing: -0.008em;
-    }
-
-    /* ── Small / caption text ── */
-    small, .stCaption, [data-testid="stCaption"] {
-        font-family: var(--font-body) !important;
-        font-size: var(--text-sm) !important;
-        font-weight: var(--font-weight-normal);
-        letter-spacing: 0em;
-        line-height: var(--leading-normal);
-    }
-
-    /* ── Monospace ── */
-    code, pre, .stCodeBlock {
-        font-family: var(--font-mono) !important;
-        font-size: var(--text-sm) !important;
-    }
-
-    /* ── Buttons ── */
-    button, .stButton > button {
-        font-family: var(--font-body) !important;
-        font-size: var(--text-base) !important;
-        letter-spacing: -0.01em !important;
-    }
-
-    /* ── Inputs & form elements ── */
-    input, textarea, select,
-    [data-testid="stSelectbox"],
-    [data-testid="stMultiSelect"],
-    [data-testid="stNumberInput"] input,
-    [data-testid="stDateInput"] input {
-        font-family: var(--font-body) !important;
-        font-size: var(--text-base) !important;
-        letter-spacing: -0.008em !important;
-    }
-
-    /* ── Streamlit widget labels ── */
-    .stSelectbox label,
-    .stMultiSelect label,
-    .stTextInput label,
-    .stTextArea label,
-    .stNumberInput label,
-    .stDateInput label,
-    .stCheckbox label,
-    .stRadio label,
-    .stSlider label,
-    .stFileUploader label,
-    [data-testid="stWidgetLabel"] {
-        font-family: var(--font-body) !important;
-        font-size: var(--text-sm) !important;
-        font-weight: var(--font-weight-medium) !important;
-        letter-spacing: -0.005em !important;
-        color: var(--qm-text-secondary) !important;
-    }
-
-    /* ── Streamlit metric widget ── */
-    [data-testid="stMetric"] {
-        font-family: var(--font-display) !important;
-    }
-    [data-testid="stMetricValue"] {
-        font-family: var(--font-display) !important;
-        font-weight: var(--font-weight-semibold) !important;
-        letter-spacing: -0.02em !important;
-    }
-    [data-testid="stMetricLabel"] {
-        font-family: var(--font-body) !important;
-        font-size: var(--text-xs) !important;
-        font-weight: var(--font-weight-medium) !important;
-        letter-spacing: 0.02em !important;
-        text-transform: uppercase;
-    }
-
-    /* ── Streamlit tabs ── */
-    .stTabs [data-baseweb="tab-list"] button {
-        font-family: var(--font-body) !important;
-        font-size: var(--text-sm) !important;
-        font-weight: var(--font-weight-medium) !important;
-        letter-spacing: -0.005em !important;
-    }
-
-    /* ── Streamlit radio / checkbox text ── */
-    .stRadio > div > label > div:last-child,
-    .stCheckbox > label > div:last-child {
-        font-family: var(--font-body) !important;
-        font-size: var(--text-base) !important;
-    }
-
-    /* ── Sidebar typography ── */
-    [data-testid="stSidebar"],
-    [data-testid="stSidebar"] * {
-        font-family: var(--font-body);
-    }
-    [data-testid="stSidebar"] h1,
-    [data-testid="stSidebar"] h2,
-    [data-testid="stSidebar"] h3 {
-        font-family: var(--font-display);
-        letter-spacing: -0.02em;
-    }
-    [data-testid="stSidebar"] .stSelectbox label,
-    [data-testid="stSidebar"] .stTextInput label {
-        font-size: var(--text-xs) !important;
-    }
-
-    /* ── Streamlit toast / snackbar ── */
-    [data-testid="stToast"] * {
-        font-family: var(--font-body) !important;
-    }
-
-    /* ── Streamlit info/warning/error/success boxes ── */
-    [data-testid="stAlert"] * {
-        font-family: var(--font-body) !important;
-        font-size: var(--text-sm) !important;
-        line-height: var(--leading-normal) !important;
-    }
-
     [data-testid="stAppViewContainer"],
     [data-testid="stApp"] {
         background: var(--background);
@@ -403,7 +232,7 @@ _DESIGN_TOKENS = """
         background: linear-gradient(145deg, var(--qm-bg-surface) 0%, var(--qm-bg-raised) 100%);
         border: 0.5px solid rgba(255,255,255,0.06);
         display: flex; align-items: center; justify-content: center;
-        font-size: var(--text-sm); font-weight: var(--font-weight-semibold); color: var(--qm-accent-bright);
+        font-size: 0.9rem; font-weight: 700; color: var(--qm-accent-bright);
         box-shadow: var(--qm-shadow-sm), inset 0 1px 0 rgba(255,255,255,0.04);
         transition: all 0.3s var(--qm-spring);
     }
@@ -412,19 +241,17 @@ _DESIGN_TOKENS = """
         transform: scale(1.05);
     }
     .qm-landing-nav .brand-text {
-        font-family: var(--font-display);
-        font-size: var(--text-lg); font-weight: var(--font-weight-semibold);
+        font-size: 1.05rem; font-weight: 650;
         color: var(--qm-text-primary);
-        letter-spacing: -0.03em;
+        letter-spacing: -0.4px;
     }
     .qm-landing-nav .nav-links {
         display: flex; gap: 2.25rem; align-items: center;
     }
     .qm-landing-nav .nav-links a {
-        font-family: var(--font-body);
-        font-size: var(--text-base); font-weight: var(--font-weight-normal);
+        font-size: 0.8rem; font-weight: 450;
         color: var(--qm-text-tertiary);
-        text-decoration: none; letter-spacing: 0em;
+        text-decoration: none; letter-spacing: 0.3px;
         padding: 4px 0;
         position: relative;
         transition: color 0.25s var(--qm-ease);
@@ -448,8 +275,8 @@ _DESIGN_TOKENS = """
     /* ── Hero ── */
     .qm-landing-hero {
         text-align: center;
-        padding: 8rem 2rem 5rem 2rem;
-        max-width: 860px;
+        padding: 7rem 2rem 4.5rem 2rem;
+        max-width: 760px;
         margin: 0 auto;
         position: relative;
         animation: fadeSlideUp 0.7s 0.15s var(--qm-spring-soft) both;
@@ -457,46 +284,46 @@ _DESIGN_TOKENS = """
     .qm-landing-hero::before {
         content: '';
         position: absolute;
-        top: -80px; left: 50%;
+        top: -60px; left: 50%;
         transform: translateX(-50%);
-        width: 600px; height: 500px;
-        background: radial-gradient(ellipse, rgba(0,122,255,0.03) 0%, transparent 70%);
+        width: 500px; height: 400px;
+        background: radial-gradient(ellipse, rgba(157,163,173,0.04) 0%, transparent 70%);
         pointer-events: none;
     }
     .qm-landing-hero .badge {
-        display: inline-flex; align-items: center; gap: 7px;
-        font-family: var(--font-body);
-        font-size: var(--text-sm); font-weight: var(--font-weight-medium);
-        letter-spacing: 0.8px; text-transform: uppercase;
+        display: inline-flex; align-items: center; gap: 6px;
+        font-size: 0.68rem; font-weight: 550;
+        letter-spacing: 1.2px; text-transform: uppercase;
         color: var(--chart-1);
-        background: linear-gradient(135deg, rgba(0,122,255,0.08) 0%, rgba(94,92,230,0.04) 100%);
-        border: 0.5px solid rgba(0, 122, 255, 0.12);
-        padding: 8px 20px;
+        background: linear-gradient(135deg, rgba(0,122,255,0.1) 0%, rgba(94,92,230,0.06) 100%);
+        border: 0.5px solid rgba(0, 122, 255, 0.15);
+        padding: 6px 16px;
         border-radius: 24px;
-        margin-bottom: 2.5rem;
+        margin-bottom: 2rem;
+        animation: pulseGlow 4s ease infinite;
+        backdrop-filter: blur(8px);
     }
     .qm-landing-hero .badge::before {
         content: '';
-        width: 6px; height: 6px;
+        width: 5px; height: 5px;
         border-radius: 50%;
         background: var(--chart-1);
-        box-shadow: 0 0 6px var(--glow-primary);
+        animation: dotPulse 2s ease infinite;
     }
     .qm-landing-hero h1 {
-        font-family: var(--font-display);
-        font-size: 4.5rem; font-weight: 700;
-        letter-spacing: -0.045em; line-height: 1.05;
-        color: var(--foreground);
-        margin: 0 0 2rem 0;
+        font-size: 3.5rem; font-weight: 800;
+        letter-spacing: -2px; line-height: 1.06;
+        color: var(--qm-text-primary);
+        margin: 0 0 1.5rem 0;
     }
     .qm-landing-hero h1 .gradient-text {
         background: linear-gradient(
             135deg,
-            #f0f0f2 0%,
-            #007aff 30%,
-            #5e5ce6 55%,
-            #007aff 80%,
-            #f0f0f2 100%
+            #e8e8ea 0%,
+            #007aff 25%,
+            #5e5ce6 50%,
+            #007aff 75%,
+            #e8e8ea 100%
         );
         background-size: 300% auto;
         -webkit-background-clip: text;
@@ -505,12 +332,11 @@ _DESIGN_TOKENS = """
         animation: shimmer 8s ease infinite;
     }
     .qm-landing-hero p {
-        font-family: var(--font-body);
-        font-size: 1.25rem; font-weight: var(--font-weight-normal);
+        font-size: 1.1rem; font-weight: 400;
         color: var(--qm-text-secondary);
-        line-height: 1.6;
-        margin: 0 auto 3.5rem auto;
-        max-width: 580px;
+        line-height: 1.7;
+        margin: 0 auto 3rem auto;
+        max-width: 540px;
     }
 
     /* ── CTA ── */
@@ -523,16 +349,16 @@ _DESIGN_TOKENS = """
     .qm-features {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 1.25rem;
-        max-width: 1000px;
+        gap: 1rem;
+        max-width: 940px;
         margin: 0 auto;
-        padding: 0 2.5rem 6rem 2.5rem;
+        padding: 0 2rem 5rem 2rem;
     }
     .qm-feature-card {
         background: linear-gradient(180deg, rgba(22,22,25,0.8) 0%, rgba(22,22,25,0.4) 100%);
         border: 0.5px solid var(--qm-border);
         border-radius: var(--qm-radius-lg);
-        padding: 2.25rem 1.75rem;
+        padding: 2rem 1.5rem;
         position: relative;
         overflow: hidden;
         transition: all 0.4s var(--qm-spring-soft);
@@ -570,12 +396,12 @@ _DESIGN_TOKENS = """
     .qm-feature-card:hover::before,
     .qm-feature-card:hover::after { opacity: 1; }
     .qm-feature-card .icon {
-        width: 44px; height: 44px;
-        border-radius: 12px;
+        width: 40px; height: 40px;
+        border-radius: 11px;
         background: linear-gradient(145deg, var(--qm-bg-surface), var(--qm-bg-elevated));
         border: 0.5px solid rgba(255,255,255,0.05);
         display: flex; align-items: center; justify-content: center;
-        font-size: var(--text-md);
+        font-size: 1.05rem;
         margin-bottom: 1.25rem;
         box-shadow: var(--qm-shadow-sm);
         transition: all 0.35s var(--qm-spring);
@@ -585,17 +411,15 @@ _DESIGN_TOKENS = """
         box-shadow: var(--qm-shadow-md);
     }
     .qm-feature-card h3 {
-        font-family: var(--font-display);
-        font-size: var(--text-md); font-weight: var(--font-weight-semibold);
+        font-size: 0.9rem; font-weight: 620;
         color: var(--qm-text-primary);
-        margin: 0 0 0.6rem 0;
-        letter-spacing: -0.02em;
+        margin: 0 0 0.5rem 0;
+        letter-spacing: -0.2px;
         transition: color 0.2s ease;
     }
     .qm-feature-card:hover h3 { color: #fff; }
     .qm-feature-card p {
-        font-family: var(--font-body);
-        font-size: var(--text-base); font-weight: var(--font-weight-normal);
+        font-size: 0.8rem; font-weight: 400;
         color: var(--qm-text-secondary);
         line-height: 1.6; margin: 0;
     }
@@ -603,41 +427,36 @@ _DESIGN_TOKENS = """
     /* ── Section headings ── */
     .qm-section-heading {
         text-align: center;
-        padding: 5rem 2rem 3rem 2rem;
+        padding: 4rem 2rem 2.5rem 2rem;
         animation: fadeSlideUp 0.55s var(--qm-spring-soft) both;
     }
     .qm-section-heading h2 {
-        font-family: var(--font-display);
-        font-size: 2.25rem; font-weight: 650;
-        letter-spacing: -0.03em;
-        color: var(--foreground);
-        margin: 0 0 0.75rem 0;
-        line-height: 1.15;
+        font-size: 1.75rem; font-weight: 750;
+        letter-spacing: -1px;
+        color: var(--qm-text-primary);
+        margin: 0 0 0.6rem 0;
     }
     .qm-section-heading p {
-        font-family: var(--font-body);
-        font-size: var(--text-lg);
+        font-size: 0.9rem;
         color: var(--qm-text-tertiary);
         margin: 0;
-        line-height: 1.5;
     }
 
     /* ── Tech pills ── */
     .qm-tech-grid {
-        display: flex; flex-wrap: wrap; gap: 0.75rem;
+        display: flex; flex-wrap: wrap; gap: 0.6rem;
         justify-content: center;
-        max-width: 760px;
+        max-width: 720px;
         margin: 0 auto;
-        padding: 0 2rem 6rem 2rem;
+        padding: 0 2rem 5rem 2rem;
         animation: fadeSlideUp 0.5s 0.2s var(--qm-spring-soft) both;
     }
     .qm-tech-pill {
-        font-family: var(--font-body);
-        font-size: var(--text-base); font-weight: var(--font-weight-medium);
+        font-size: 0.76rem; font-weight: 500;
         color: var(--qm-text-secondary);
         background: var(--qm-bg-raised);
         border: 0.5px solid var(--qm-border);
-        padding: 9px 20px;
+        padding: 7px 16px;
         border-radius: 22px;
         letter-spacing: 0.2px;
         transition: all 0.3s var(--qm-spring-soft);
@@ -655,15 +474,15 @@ _DESIGN_TOKENS = """
     .qm-security-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
-        max-width: 780px;
+        gap: 0.75rem;
+        max-width: 720px;
         margin: 0 auto;
-        padding: 0 2rem 6rem 2rem;
+        padding: 0 2rem 5rem 2rem;
         animation: fadeSlideUp 0.5s 0.2s var(--qm-spring-soft) both;
     }
     .qm-security-item {
-        display: flex; gap: 0.85rem; align-items: flex-start;
-        padding: 1.35rem 1.5rem;
+        display: flex; gap: 0.75rem; align-items: flex-start;
+        padding: 1.15rem 1.25rem;
         background: linear-gradient(180deg, var(--qm-bg-raised) 0%, rgba(22,22,25,0.6) 100%);
         border: 0.5px solid var(--qm-border);
         border-radius: var(--qm-radius-md);
@@ -690,22 +509,20 @@ _DESIGN_TOKENS = """
     .qm-security-item:nth-child(5) .dot { animation-delay: 2s; }
     .qm-security-item:nth-child(6) .dot { animation-delay: 2.5s; }
     .qm-security-item .text h4 {
-        font-family: var(--font-display);
-        font-size: var(--text-base); font-weight: var(--font-weight-semibold);
-        color: var(--foreground);
-        margin: 0 0 0.35rem 0;
+        font-size: 0.84rem; font-weight: 600;
+        color: var(--qm-text-primary);
+        margin: 0 0 0.3rem 0;
     }
     .qm-security-item .text p {
-        font-family: var(--font-body);
-        font-size: var(--text-sm);
+        font-size: 0.76rem;
         color: var(--qm-text-tertiary);
-        margin: 0; line-height: 1.6;
+        margin: 0; line-height: 1.55;
     }
 
     /* ── Footer ── */
     .qm-footer {
         text-align: center;
-        padding: 4.5rem 2rem;
+        padding: 3.5rem 2rem;
         border-top: 0.5px solid var(--qm-border);
         animation: fadeIn 0.5s 0.4s var(--qm-spring-soft) both;
         position: relative;
@@ -718,8 +535,7 @@ _DESIGN_TOKENS = """
         background: linear-gradient(90deg, transparent, rgba(0,122,255,0.2), transparent);
     }
     .qm-footer p {
-        font-family: var(--font-body);
-        font-size: var(--text-base);
+        font-size: 0.76rem;
         color: var(--qm-text-ghost);
         margin: 0; letter-spacing: 0.3px;
     }
@@ -754,7 +570,7 @@ _DESIGN_TOKENS = """
         background: linear-gradient(145deg, var(--qm-bg-surface), var(--qm-bg-raised));
         border: 0.5px solid var(--qm-border);
         display: flex; align-items: center; justify-content: center;
-        font-size: var(--text-sm); font-weight: var(--font-weight-semibold); color: var(--qm-accent-bright);
+        font-size: 0.78rem; font-weight: 700; color: var(--qm-accent-bright);
         box-shadow: var(--qm-shadow-sm);
         transition: all 0.3s var(--qm-spring);
     }
@@ -762,7 +578,7 @@ _DESIGN_TOKENS = """
         transform: scale(1.08);
     }
     .qm-ws-header .brand-text {
-        font-size: var(--text-base); font-weight: var(--font-weight-semibold);
+        font-size: 0.92rem; font-weight: 620;
         color: var(--qm-text-primary);
         letter-spacing: -0.3px;
     }
@@ -774,8 +590,8 @@ _DESIGN_TOKENS = """
         border: 0.5px solid var(--qm-border) !important;
         border-radius: var(--qm-radius-sm) !important;
         color: var(--qm-text-primary) !important;
-        font-family: var(--font-body) !important;
-        font-size: var(--text-base) !important;
+        font-family: var(--qm-font) !important;
+        font-size: 0.88rem !important;
         padding: 0.9rem 1.1rem !important;
         transition: border-color 0.3s var(--qm-spring-soft),
                     box-shadow 0.3s var(--qm-spring-soft),
@@ -804,17 +620,16 @@ _DESIGN_TOKENS = """
         border: 0.5px solid rgba(255, 255, 255, 0.08) !important;
         border-radius: var(--qm-radius-sm) !important;
         color: var(--qm-text-primary) !important;
-        font-family: var(--font-display) !important;
-        font-weight: var(--font-weight-medium) !important;
-        font-size: var(--text-base) !important;
+        font-family: var(--qm-font) !important;
+        font-weight: 550 !important;
+        font-size: 0.86rem !important;
         letter-spacing: 0.1px !important;
-        padding: 0.8rem 2rem !important;
+        padding: 0.7rem 1.5rem !important;
         position: relative !important;
         overflow: hidden !important;
         transition: all 0.25s var(--qm-spring-soft) !important;
         box-shadow: var(--qm-shadow-sm),
                     inset 0 1px 0 rgba(255,255,255,0.05) !important;
-        min-height: 48px !important;
     }
     .stButton > button[kind="primary"]::before,
     .stButton > button[data-testid="stBaseButton-primary"]::before {
@@ -848,9 +663,9 @@ _DESIGN_TOKENS = """
         border: 0.5px solid var(--qm-border) !important;
         border-radius: var(--qm-radius-sm) !important;
         color: var(--qm-text-secondary) !important;
-        font-family: var(--font-body) !important;
-        font-weight: var(--font-weight-medium) !important;
-        font-size: var(--text-sm) !important;
+        font-family: var(--qm-font) !important;
+        font-weight: 500 !important;
+        font-size: 0.8rem !important;
         padding: 0.55rem 1.25rem !important;
         transition: all 0.25s var(--qm-spring-soft) !important;
         position: relative !important;
@@ -879,9 +694,9 @@ _DESIGN_TOKENS = """
         -webkit-backdrop-filter: blur(16px) saturate(1.2) !important;
         border: 0.5px solid var(--qm-border) !important;
         border-radius: var(--qm-radius-sm) !important;
-        font-family: var(--font-body) !important;
-        font-size: var(--text-sm) !important;
-        font-weight: var(--font-weight-medium) !important;
+        font-family: var(--qm-font) !important;
+        font-size: 0.8rem !important;
+        font-weight: 500 !important;
         color: var(--qm-text-secondary) !important;
         letter-spacing: 0.2px !important;
         padding: 0.75rem 1.1rem !important;
@@ -935,8 +750,8 @@ _DESIGN_TOKENS = """
     /* ── Status pill ── */
     .qm-status-pill {
         display: inline-flex; align-items: center; gap: 6px;
-        font-family: var(--font-body);
-        font-size: var(--text-xs); font-weight: var(--font-weight-medium);
+        font-family: var(--qm-font);
+        font-size: 0.68rem; font-weight: 550;
         letter-spacing: 0.6px; text-transform: uppercase;
         padding: 5px 14px; border-radius: 22px;
         transition: all 0.3s var(--qm-spring-soft);
@@ -962,21 +777,21 @@ _DESIGN_TOKENS = """
 
     /* ── Sidebar labels ── */
     .qm-section-label {
-        font-family: var(--font-display);
-        font-size: var(--text-xs); font-weight: var(--font-weight-semibold);
+        font-family: var(--qm-font);
+        font-size: 0.6rem; font-weight: 650;
         letter-spacing: 1.8px; text-transform: uppercase;
         color: var(--qm-text-tertiary);
         margin: 1.25rem 0 0.5rem 0;
     }
     .qm-table-item {
-        font-family: var(--font-body); font-size: var(--text-sm);
+        font-family: var(--qm-font); font-size: 0.8rem;
         color: var(--qm-text-secondary);
         padding: 4px 0;
         transition: color 0.2s ease;
     }
     .qm-table-item:hover { color: var(--qm-text-primary); }
     .qm-table-item code {
-        font-size: var(--text-xs);
+        font-size: 0.76rem;
         color: rgba(240, 240, 243, 0.65);
         background: rgba(255, 255, 255, 0.04);
         padding: 2px 7px; border-radius: 5px;
@@ -989,13 +804,13 @@ _DESIGN_TOKENS = """
     }
     .qm-table-item .cols {
         color: var(--qm-text-tertiary);
-        font-size: var(--text-xs); margin-left: 4px;
+        font-size: 0.7rem; margin-left: 4px;
     }
 
     /* ── Result labels ── */
     .qm-label {
-        font-family: var(--font-display);
-        font-size: var(--text-xs); font-weight: var(--font-weight-semibold);
+        font-family: var(--qm-font);
+        font-size: 0.6rem; font-weight: 650;
         letter-spacing: 1.8px; text-transform: uppercase;
         color: var(--qm-text-tertiary);
         margin-bottom: 0.5rem;
@@ -1004,20 +819,20 @@ _DESIGN_TOKENS = """
     /* ── Metrics strip ── */
     .qm-metrics-strip {
         display: flex; gap: 1.25rem; padding: 0.6rem 0;
-        font-family: var(--font-body);
-        font-size: var(--text-sm);
+        font-family: var(--qm-font);
+        font-size: 0.76rem;
         color: var(--qm-text-tertiary);
         animation: fadeIn 0.5s 0.2s both;
     }
     .qm-metrics-strip .val {
         color: var(--qm-text-secondary);
-        font-weight: var(--font-weight-medium);
+        font-weight: 550;
     }
 
     /* ── User badge ── */
     .qm-user-badge {
-        font-family: var(--font-body);
-        font-size: var(--text-xs); font-weight: var(--font-weight-medium);
+        font-family: var(--qm-font);
+        font-size: 0.7rem; font-weight: 500;
         color: var(--qm-text-tertiary);
         padding: 2px 0; letter-spacing: 0.2px;
     }
@@ -1049,7 +864,7 @@ _DESIGN_TOKENS = """
     [data-testid="stAlert"] {
         border-radius: var(--qm-radius-sm) !important;
         border-width: 0.5px !important;
-        font-size: var(--text-sm) !important;
+        font-size: 0.84rem !important;
         backdrop-filter: blur(8px) !important;
     }
 
@@ -1086,7 +901,7 @@ _DESIGN_TOKENS = """
     }
 
     .stCaption, [data-testid="stCaption"] {
-        font-family: var(--font-body) !important;
+        font-family: var(--qm-font) !important;
     }
 
     /* ── Workspace-specific panels ── */
@@ -1128,14 +943,12 @@ _DESIGN_TOKENS = """
         position: relative; z-index: 1;
     }
     .qm-ws-topbar .brand-text {
-        font-family: var(--font-display);
-        font-size: var(--text-md); font-weight: var(--font-weight-semibold);
+        font-size: 1rem; font-weight: 650;
         color: var(--foreground);
         letter-spacing: -0.4px;
     }
     .qm-ws-topbar .brand-sub {
-        font-family: var(--font-body);
-        font-size: var(--text-xs); font-weight: var(--font-weight-normal);
+        font-size: 0.7rem; font-weight: 450;
         color: var(--qm-text-tertiary);
         letter-spacing: 0.3px;
         margin-left: 8px;
@@ -1159,8 +972,7 @@ _DESIGN_TOKENS = """
         background: linear-gradient(90deg, transparent, rgba(0,122,255,0.12), transparent);
     }
     .qm-query-card .card-label {
-        font-family: var(--font-display);
-        font-size: var(--text-xs); font-weight: var(--font-weight-semibold);
+        font-size: 0.62rem; font-weight: 650;
         letter-spacing: 1.5px; text-transform: uppercase;
         color: var(--chart-1);
         margin-bottom: 0.75rem;
@@ -1214,14 +1026,14 @@ _DESIGN_TOKENS = """
         box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     }
     .qm-metric-card .metric-val {
-        font-family: var(--font-display);
-        font-size: var(--text-xl); font-weight: var(--font-weight-semibold);
+        font-family: var(--qm-font);
+        font-size: 1.1rem; font-weight: 650;
         color: var(--foreground);
         letter-spacing: -0.5px;
     }
     .qm-metric-card .metric-label {
-        font-family: var(--font-body);
-        font-size: var(--text-xs); font-weight: var(--font-weight-medium);
+        font-family: var(--qm-font);
+        font-size: 0.62rem; font-weight: 550;
         letter-spacing: 1px; text-transform: uppercase;
         color: var(--qm-text-tertiary);
         margin-top: 2px;
@@ -1261,8 +1073,7 @@ _DESIGN_TOKENS = """
         position: relative; z-index: 1;
     }
     .qm-sidebar-logo .logo-text {
-        font-family: var(--font-display);
-        font-size: var(--text-sm); font-weight: var(--font-weight-semibold);
+        font-size: 0.82rem; font-weight: 620;
         color: var(--foreground);
         letter-spacing: -0.3px;
     }
@@ -1276,18 +1087,17 @@ _DESIGN_TOKENS = """
 
     /* ── Responsive ── */
     @media (max-width: 768px) {
-        .qm-landing-hero h1 { font-size: 2.75rem; letter-spacing: -0.035em; }
-        .qm-landing-hero p { font-size: var(--text-md); }
-        .qm-features { grid-template-columns: 1fr; max-width: 480px; }
-        .qm-security-grid { grid-template-columns: 1fr; max-width: 480px; }
-        .qm-landing-nav { padding: 0.75rem 1.5rem; }
-        .qm-landing-nav .nav-links { gap: 1.25rem; }
-        .qm-landing-nav .nav-links a { font-size: var(--text-sm); }
-        .qm-landing-hero { padding: 5rem 1.5rem 3.5rem 1.5rem; }
-        .qm-section-heading h2 { font-size: 1.75rem; }
+        .qm-landing-hero h1 { font-size: 2.4rem; letter-spacing: -1.2px; }
+        .qm-landing-hero p { font-size: 0.95rem; }
+        .qm-features { grid-template-columns: 1fr; }
+        .qm-security-grid { grid-template-columns: 1fr; }
+        .qm-landing-nav { padding: 0.75rem 1.25rem; }
+        .qm-landing-nav .nav-links { gap: 1rem; }
+        .qm-landing-nav .nav-links a { font-size: 0.72rem; }
+        .qm-landing-hero { padding: 4rem 1.5rem 3rem 1.5rem; }
     }
     @media (max-width: 480px) {
-        .qm-landing-hero h1 { font-size: 2.125rem; }
+        .qm-landing-hero h1 { font-size: 1.8rem; }
         .qm-landing-nav .nav-links { display: none; }
     }
 </style>
