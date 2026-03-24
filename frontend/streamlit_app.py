@@ -44,12 +44,34 @@ st.set_page_config(page_title="QueryMind", page_icon="Q", layout="wide")
 # ──────────────────────────────────────────────────────────────
 _DESIGN_TOKENS = """
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
     :root {
-        /* ── Typography ── */
+        /* ── Typography — Apple-style system ── */
+        --font-display:      -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        --font-body:         -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        --font-mono:         "SF Mono", SFMono-Regular, ui-monospace, Menlo, Monaco, Consolas, monospace;
+        --font-weight-light: 300;
         --font-weight-normal: 400;
         --font-weight-medium: 500;
+        --font-weight-semibold: 590;
+        --font-weight-bold:  680;
+
+        /* ── Type scale (Apple-inspired, larger base) ── */
+        --text-xs:   0.75rem;    /* 12px */
+        --text-sm:   0.8125rem;  /* 13px */
+        --text-base: 0.9375rem;  /* 15px — Apple body size */
+        --text-md:   1rem;       /* 16px */
+        --text-lg:   1.125rem;   /* 18px */
+        --text-xl:   1.3125rem;  /* 21px */
+        --text-2xl:  1.75rem;    /* 28px */
+        --text-3xl:  2.25rem;    /* 36px */
+        --text-4xl:  3rem;       /* 48px */
+        --text-hero: 3.75rem;    /* 60px */
+
+        /* ── Line heights ── */
+        --leading-tight:  1.1;
+        --leading-snug:   1.2;
+        --leading-normal: 1.5;
+        --leading-relaxed: 1.65;
 
         /* ── Syntactic Slate — Core palette ── */
         --background:       #0a0a0b;
@@ -113,9 +135,7 @@ _DESIGN_TOKENS = """
         --qm-radius-md:     calc(var(--radius) + 2px);
         --qm-radius-lg:     calc(var(--radius) + 6px);
         --qm-radius-xl:     calc(var(--radius) + 12px);
-        --qm-font:          'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
-                             'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
-                             'Helvetica Neue', sans-serif;
+        --qm-font:          var(--font-body);
         --qm-spring:        cubic-bezier(0.175, 0.885, 0.32, 1.275);
         --qm-spring-soft:   cubic-bezier(0.16, 1, 0.3, 1);
         --qm-ease:          cubic-bezier(0.4, 0, 0.2, 1);
@@ -150,14 +170,81 @@ _DESIGN_TOKENS = """
         border-radius: var(--radius);
     }
 
-    /* ── Reset ── */
+    /* ── Reset & global typography ── */
     #MainMenu, footer, header { visibility: hidden; }
     .stDeployButton { display: none; }
+
     html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {
-        font-family: var(--qm-font);
+        font-family: var(--font-body);
         font-weight: var(--font-weight-normal);
+        font-size: var(--text-base);
+        line-height: var(--leading-normal);
+        letter-spacing: -0.01em;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+    }
+
+    /* ── Headings — SF Pro Display style ── */
+    h1, h2, h3, h4, h5, h6,
+    .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
+        font-family: var(--font-display);
+        letter-spacing: -0.025em;
+        line-height: var(--leading-tight);
+    }
+    h1, .stMarkdown h1 {
+        font-size: var(--text-4xl);
+        font-weight: var(--font-weight-bold);
+        letter-spacing: -0.035em;
+    }
+    h2, .stMarkdown h2 {
+        font-size: var(--text-2xl);
+        font-weight: var(--font-weight-semibold);
+        letter-spacing: -0.03em;
+    }
+    h3, .stMarkdown h3 {
+        font-size: var(--text-xl);
+        font-weight: var(--font-weight-semibold);
+        letter-spacing: -0.02em;
+    }
+
+    /* ── Body text ── */
+    p, li, span, label,
+    .stMarkdown p, .stMarkdown li {
+        font-family: var(--font-body);
+        font-size: var(--text-base);
+        font-weight: var(--font-weight-normal);
+        line-height: var(--leading-relaxed);
+        letter-spacing: -0.008em;
+    }
+
+    /* ── Small / caption text ── */
+    small, .stCaption, [data-testid="stCaption"] {
+        font-family: var(--font-body) !important;
+        font-size: var(--text-sm) !important;
+        font-weight: var(--font-weight-normal);
+        letter-spacing: 0em;
+        line-height: var(--leading-normal);
+    }
+
+    /* ── Monospace ── */
+    code, pre, .stCodeBlock {
+        font-family: var(--font-mono) !important;
+        font-size: var(--text-sm) !important;
+    }
+
+    /* ── Buttons ── */
+    button, .stButton > button {
+        font-family: var(--font-body) !important;
+        font-size: var(--text-base) !important;
+        letter-spacing: -0.01em !important;
+    }
+
+    /* ── Inputs ── */
+    input, textarea, select, [data-testid="stSelectbox"] {
+        font-family: var(--font-body) !important;
+        font-size: var(--text-base) !important;
+        letter-spacing: -0.008em !important;
     }
     [data-testid="stAppViewContainer"],
     [data-testid="stApp"] {
@@ -241,17 +328,19 @@ _DESIGN_TOKENS = """
         transform: scale(1.05);
     }
     .qm-landing-nav .brand-text {
-        font-size: 1.05rem; font-weight: 650;
+        font-family: var(--font-display);
+        font-size: var(--text-md); font-weight: var(--font-weight-semibold);
         color: var(--qm-text-primary);
-        letter-spacing: -0.4px;
+        letter-spacing: -0.03em;
     }
     .qm-landing-nav .nav-links {
         display: flex; gap: 2.25rem; align-items: center;
     }
     .qm-landing-nav .nav-links a {
-        font-size: 0.8rem; font-weight: 450;
+        font-family: var(--font-body);
+        font-size: var(--text-sm); font-weight: var(--font-weight-normal);
         color: var(--qm-text-tertiary);
-        text-decoration: none; letter-spacing: 0.3px;
+        text-decoration: none; letter-spacing: 0em;
         padding: 4px 0;
         position: relative;
         transition: color 0.25s var(--qm-ease);
@@ -292,7 +381,8 @@ _DESIGN_TOKENS = """
     }
     .qm-landing-hero .badge {
         display: inline-flex; align-items: center; gap: 6px;
-        font-size: 0.68rem; font-weight: 550;
+        font-family: var(--font-body);
+        font-size: var(--text-xs); font-weight: var(--font-weight-medium);
         letter-spacing: 1.2px; text-transform: uppercase;
         color: var(--chart-1);
         background: linear-gradient(135deg, rgba(0,122,255,0.1) 0%, rgba(94,92,230,0.06) 100%);
@@ -311,8 +401,9 @@ _DESIGN_TOKENS = """
         animation: dotPulse 2s ease infinite;
     }
     .qm-landing-hero h1 {
-        font-size: 3.5rem; font-weight: 800;
-        letter-spacing: -2px; line-height: 1.06;
+        font-family: var(--font-display);
+        font-size: var(--text-hero); font-weight: var(--font-weight-bold);
+        letter-spacing: -0.04em; line-height: var(--leading-tight);
         color: var(--qm-text-primary);
         margin: 0 0 1.5rem 0;
     }
@@ -332,9 +423,10 @@ _DESIGN_TOKENS = """
         animation: shimmer 8s ease infinite;
     }
     .qm-landing-hero p {
-        font-size: 1.1rem; font-weight: 400;
+        font-family: var(--font-body);
+        font-size: var(--text-lg); font-weight: var(--font-weight-normal);
         color: var(--qm-text-secondary);
-        line-height: 1.7;
+        line-height: var(--leading-relaxed);
         margin: 0 auto 3rem auto;
         max-width: 540px;
     }
@@ -411,17 +503,19 @@ _DESIGN_TOKENS = """
         box-shadow: var(--qm-shadow-md);
     }
     .qm-feature-card h3 {
-        font-size: 0.9rem; font-weight: 620;
+        font-family: var(--font-display);
+        font-size: var(--text-base); font-weight: var(--font-weight-semibold);
         color: var(--qm-text-primary);
         margin: 0 0 0.5rem 0;
-        letter-spacing: -0.2px;
+        letter-spacing: -0.02em;
         transition: color 0.2s ease;
     }
     .qm-feature-card:hover h3 { color: #fff; }
     .qm-feature-card p {
-        font-size: 0.8rem; font-weight: 400;
+        font-family: var(--font-body);
+        font-size: var(--text-sm); font-weight: var(--font-weight-normal);
         color: var(--qm-text-secondary);
-        line-height: 1.6; margin: 0;
+        line-height: var(--leading-relaxed); margin: 0;
     }
 
     /* ── Section headings ── */
@@ -431,13 +525,15 @@ _DESIGN_TOKENS = """
         animation: fadeSlideUp 0.55s var(--qm-spring-soft) both;
     }
     .qm-section-heading h2 {
-        font-size: 1.75rem; font-weight: 750;
-        letter-spacing: -1px;
+        font-family: var(--font-display);
+        font-size: var(--text-2xl); font-weight: var(--font-weight-semibold);
+        letter-spacing: -0.03em;
         color: var(--qm-text-primary);
         margin: 0 0 0.6rem 0;
     }
     .qm-section-heading p {
-        font-size: 0.9rem;
+        font-family: var(--font-body);
+        font-size: var(--text-base);
         color: var(--qm-text-tertiary);
         margin: 0;
     }
@@ -452,7 +548,8 @@ _DESIGN_TOKENS = """
         animation: fadeSlideUp 0.5s 0.2s var(--qm-spring-soft) both;
     }
     .qm-tech-pill {
-        font-size: 0.76rem; font-weight: 500;
+        font-family: var(--font-body);
+        font-size: var(--text-sm); font-weight: var(--font-weight-medium);
         color: var(--qm-text-secondary);
         background: var(--qm-bg-raised);
         border: 0.5px solid var(--qm-border);
@@ -509,12 +606,14 @@ _DESIGN_TOKENS = """
     .qm-security-item:nth-child(5) .dot { animation-delay: 2s; }
     .qm-security-item:nth-child(6) .dot { animation-delay: 2.5s; }
     .qm-security-item .text h4 {
-        font-size: 0.84rem; font-weight: 600;
+        font-family: var(--font-display);
+        font-size: var(--text-sm); font-weight: var(--font-weight-semibold);
         color: var(--qm-text-primary);
         margin: 0 0 0.3rem 0;
     }
     .qm-security-item .text p {
-        font-size: 0.76rem;
+        font-family: var(--font-body);
+        font-size: var(--text-xs);
         color: var(--qm-text-tertiary);
         margin: 0; line-height: 1.55;
     }
@@ -535,7 +634,8 @@ _DESIGN_TOKENS = """
         background: linear-gradient(90deg, transparent, rgba(0,122,255,0.2), transparent);
     }
     .qm-footer p {
-        font-size: 0.76rem;
+        font-family: var(--font-body);
+        font-size: var(--text-sm);
         color: var(--qm-text-ghost);
         margin: 0; letter-spacing: 0.3px;
     }
@@ -590,8 +690,8 @@ _DESIGN_TOKENS = """
         border: 0.5px solid var(--qm-border) !important;
         border-radius: var(--qm-radius-sm) !important;
         color: var(--qm-text-primary) !important;
-        font-family: var(--qm-font) !important;
-        font-size: 0.88rem !important;
+        font-family: var(--font-body) !important;
+        font-size: var(--text-base) !important;
         padding: 0.9rem 1.1rem !important;
         transition: border-color 0.3s var(--qm-spring-soft),
                     box-shadow 0.3s var(--qm-spring-soft),
@@ -620,9 +720,9 @@ _DESIGN_TOKENS = """
         border: 0.5px solid rgba(255, 255, 255, 0.08) !important;
         border-radius: var(--qm-radius-sm) !important;
         color: var(--qm-text-primary) !important;
-        font-family: var(--qm-font) !important;
-        font-weight: 550 !important;
-        font-size: 0.86rem !important;
+        font-family: var(--font-display) !important;
+        font-weight: var(--font-weight-medium) !important;
+        font-size: var(--text-base) !important;
         letter-spacing: 0.1px !important;
         padding: 0.7rem 1.5rem !important;
         position: relative !important;
@@ -663,9 +763,9 @@ _DESIGN_TOKENS = """
         border: 0.5px solid var(--qm-border) !important;
         border-radius: var(--qm-radius-sm) !important;
         color: var(--qm-text-secondary) !important;
-        font-family: var(--qm-font) !important;
-        font-weight: 500 !important;
-        font-size: 0.8rem !important;
+        font-family: var(--font-body) !important;
+        font-weight: var(--font-weight-medium) !important;
+        font-size: var(--text-sm) !important;
         padding: 0.55rem 1.25rem !important;
         transition: all 0.25s var(--qm-spring-soft) !important;
         position: relative !important;
@@ -694,9 +794,9 @@ _DESIGN_TOKENS = """
         -webkit-backdrop-filter: blur(16px) saturate(1.2) !important;
         border: 0.5px solid var(--qm-border) !important;
         border-radius: var(--qm-radius-sm) !important;
-        font-family: var(--qm-font) !important;
-        font-size: 0.8rem !important;
-        font-weight: 500 !important;
+        font-family: var(--font-body) !important;
+        font-size: var(--text-sm) !important;
+        font-weight: var(--font-weight-medium) !important;
         color: var(--qm-text-secondary) !important;
         letter-spacing: 0.2px !important;
         padding: 0.75rem 1.1rem !important;
@@ -750,8 +850,8 @@ _DESIGN_TOKENS = """
     /* ── Status pill ── */
     .qm-status-pill {
         display: inline-flex; align-items: center; gap: 6px;
-        font-family: var(--qm-font);
-        font-size: 0.68rem; font-weight: 550;
+        font-family: var(--font-body);
+        font-size: var(--text-xs); font-weight: var(--font-weight-medium);
         letter-spacing: 0.6px; text-transform: uppercase;
         padding: 5px 14px; border-radius: 22px;
         transition: all 0.3s var(--qm-spring-soft);
@@ -777,14 +877,14 @@ _DESIGN_TOKENS = """
 
     /* ── Sidebar labels ── */
     .qm-section-label {
-        font-family: var(--qm-font);
-        font-size: 0.6rem; font-weight: 650;
+        font-family: var(--font-display);
+        font-size: var(--text-xs); font-weight: var(--font-weight-semibold);
         letter-spacing: 1.8px; text-transform: uppercase;
         color: var(--qm-text-tertiary);
         margin: 1.25rem 0 0.5rem 0;
     }
     .qm-table-item {
-        font-family: var(--qm-font); font-size: 0.8rem;
+        font-family: var(--font-body); font-size: var(--text-sm);
         color: var(--qm-text-secondary);
         padding: 4px 0;
         transition: color 0.2s ease;
@@ -809,8 +909,8 @@ _DESIGN_TOKENS = """
 
     /* ── Result labels ── */
     .qm-label {
-        font-family: var(--qm-font);
-        font-size: 0.6rem; font-weight: 650;
+        font-family: var(--font-display);
+        font-size: var(--text-xs); font-weight: var(--font-weight-semibold);
         letter-spacing: 1.8px; text-transform: uppercase;
         color: var(--qm-text-tertiary);
         margin-bottom: 0.5rem;
@@ -819,8 +919,8 @@ _DESIGN_TOKENS = """
     /* ── Metrics strip ── */
     .qm-metrics-strip {
         display: flex; gap: 1.25rem; padding: 0.6rem 0;
-        font-family: var(--qm-font);
-        font-size: 0.76rem;
+        font-family: var(--font-body);
+        font-size: var(--text-sm);
         color: var(--qm-text-tertiary);
         animation: fadeIn 0.5s 0.2s both;
     }
@@ -831,8 +931,8 @@ _DESIGN_TOKENS = """
 
     /* ── User badge ── */
     .qm-user-badge {
-        font-family: var(--qm-font);
-        font-size: 0.7rem; font-weight: 500;
+        font-family: var(--font-body);
+        font-size: var(--text-xs); font-weight: var(--font-weight-medium);
         color: var(--qm-text-tertiary);
         padding: 2px 0; letter-spacing: 0.2px;
     }
@@ -864,7 +964,7 @@ _DESIGN_TOKENS = """
     [data-testid="stAlert"] {
         border-radius: var(--qm-radius-sm) !important;
         border-width: 0.5px !important;
-        font-size: 0.84rem !important;
+        font-size: var(--text-sm) !important;
         backdrop-filter: blur(8px) !important;
     }
 
@@ -901,7 +1001,7 @@ _DESIGN_TOKENS = """
     }
 
     .stCaption, [data-testid="stCaption"] {
-        font-family: var(--qm-font) !important;
+        font-family: var(--font-body) !important;
     }
 
     /* ── Workspace-specific panels ── */
@@ -943,12 +1043,14 @@ _DESIGN_TOKENS = """
         position: relative; z-index: 1;
     }
     .qm-ws-topbar .brand-text {
-        font-size: 1rem; font-weight: 650;
+        font-family: var(--font-display);
+        font-size: var(--text-md); font-weight: var(--font-weight-semibold);
         color: var(--foreground);
         letter-spacing: -0.4px;
     }
     .qm-ws-topbar .brand-sub {
-        font-size: 0.7rem; font-weight: 450;
+        font-family: var(--font-body);
+        font-size: var(--text-xs); font-weight: var(--font-weight-normal);
         color: var(--qm-text-tertiary);
         letter-spacing: 0.3px;
         margin-left: 8px;
@@ -972,7 +1074,8 @@ _DESIGN_TOKENS = """
         background: linear-gradient(90deg, transparent, rgba(0,122,255,0.12), transparent);
     }
     .qm-query-card .card-label {
-        font-size: 0.62rem; font-weight: 650;
+        font-family: var(--font-display);
+        font-size: var(--text-xs); font-weight: var(--font-weight-semibold);
         letter-spacing: 1.5px; text-transform: uppercase;
         color: var(--chart-1);
         margin-bottom: 0.75rem;
@@ -1026,14 +1129,14 @@ _DESIGN_TOKENS = """
         box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     }
     .qm-metric-card .metric-val {
-        font-family: var(--qm-font);
-        font-size: 1.1rem; font-weight: 650;
+        font-family: var(--font-display);
+        font-size: var(--text-xl); font-weight: var(--font-weight-semibold);
         color: var(--foreground);
         letter-spacing: -0.5px;
     }
     .qm-metric-card .metric-label {
-        font-family: var(--qm-font);
-        font-size: 0.62rem; font-weight: 550;
+        font-family: var(--font-body);
+        font-size: var(--text-xs); font-weight: var(--font-weight-medium);
         letter-spacing: 1px; text-transform: uppercase;
         color: var(--qm-text-tertiary);
         margin-top: 2px;
@@ -1073,7 +1176,8 @@ _DESIGN_TOKENS = """
         position: relative; z-index: 1;
     }
     .qm-sidebar-logo .logo-text {
-        font-size: 0.82rem; font-weight: 620;
+        font-family: var(--font-display);
+        font-size: var(--text-sm); font-weight: var(--font-weight-semibold);
         color: var(--foreground);
         letter-spacing: -0.3px;
     }
@@ -1087,8 +1191,8 @@ _DESIGN_TOKENS = """
 
     /* ── Responsive ── */
     @media (max-width: 768px) {
-        .qm-landing-hero h1 { font-size: 2.4rem; letter-spacing: -1.2px; }
-        .qm-landing-hero p { font-size: 0.95rem; }
+        .qm-landing-hero h1 { font-size: var(--text-3xl); letter-spacing: -0.03em; }
+        .qm-landing-hero p { font-size: var(--text-base); }
         .qm-features { grid-template-columns: 1fr; }
         .qm-security-grid { grid-template-columns: 1fr; }
         .qm-landing-nav { padding: 0.75rem 1.25rem; }
@@ -1097,7 +1201,7 @@ _DESIGN_TOKENS = """
         .qm-landing-hero { padding: 4rem 1.5rem 3rem 1.5rem; }
     }
     @media (max-width: 480px) {
-        .qm-landing-hero h1 { font-size: 1.8rem; }
+        .qm-landing-hero h1 { font-size: var(--text-2xl); }
         .qm-landing-nav .nav-links { display: none; }
     }
 </style>
