@@ -6,8 +6,14 @@ import uuid
 import pandas as pd
 import streamlit as st
 
-# Persistent user ID per browser session
-if "user_id" not in st.session_state:
+# Persistent user ID — stable across sessions via query param or default
+# Users can bookmark ?user=myname to keep their identity (and feedback history)
+_user_param = st.query_params.get("user")
+if _user_param:
+    # Deterministic UUID from the username so it's always the same
+    stable_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, _user_param))
+    st.session_state["user_id"] = stable_id
+elif "user_id" not in st.session_state:
     st.session_state["user_id"] = str(uuid.uuid4())
 
 from api_client import (
@@ -157,6 +163,22 @@ with st.sidebar:
             '<div class="qm-status offline">Backend offline</div>',
             unsafe_allow_html=True,
         )
+
+    # User identity — set a name to persist feedback across sessions
+    st.caption("USER")
+    current_user = _user_param or ""
+    new_user = st.text_input(
+        "Username",
+        value=current_user,
+        key="username_input",
+        placeholder="Enter a name to keep your history",
+        label_visibility="collapsed",
+    )
+    if new_user and new_user != current_user:
+        st.query_params["user"] = new_user
+        st.rerun()
+    if current_user:
+        st.caption(f"Signed in as **{current_user}**")
 
     st.markdown("---")
 

@@ -86,6 +86,12 @@ async def run_query_pipeline(request: QueryRequest, db: AsyncSession) -> QueryRe
 
     # Fetch few-shot examples
     few_shot = await _get_few_shot_examples(db, request.user_id)
+    await log.ainfo(
+        "few_shot_loaded",
+        user_id=request.user_id,
+        count=len(few_shot),
+        queries=[ex.nl_query[:60] for ex in few_shot],
+    )
 
     last_error: str | None = None
     final_sql: str | None = None

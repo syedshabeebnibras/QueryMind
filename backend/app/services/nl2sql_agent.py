@@ -80,12 +80,17 @@ def build_few_shot_prompt(examples: list[FewShotExampleOut]) -> str:
     if not examples:
         return ""
 
-    lines = ["Here are some example question→SQL pairs for reference:\n"]
+    lines = [
+        "Here are corrections from past queries. Learn from these mistakes "
+        "and use the corrected SQL as the reference:\n"
+    ]
     for ex in examples:
         lines.append(f"Question: {ex.nl_query}")
-        lines.append(f"SQL: {ex.corrected_sql}")
+        if ex.bad_sql:
+            lines.append(f"Wrong SQL: {ex.bad_sql}")
+        lines.append(f"Correct SQL: {ex.corrected_sql}")
         if ex.notes:
-            lines.append(f"Note: {ex.notes}")
+            lines.append(f"Why it was wrong: {ex.notes}")
         lines.append("")
     return "\n".join(lines)
 

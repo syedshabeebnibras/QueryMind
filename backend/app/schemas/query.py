@@ -91,6 +91,7 @@ class FeedbackResponse(BaseModel):
 
 class FewShotExampleOut(BaseModel):
     nl_query: str
+    bad_sql: str | None = None
     corrected_sql: str
     notes: str | None
 
