@@ -61,7 +61,7 @@ async def import_table(
     table_data: str, table_name: str = "user_table", connection_id: str | None = None
 ) -> dict[str, Any]:
     """POST /table/import — import raw table data into the database."""
-    async with httpx.AsyncClient(timeout=60) as client:
+    async with httpx.AsyncClient(timeout=300) as client:
         payload: dict[str, Any] = {"table_data": table_data, "table_name": table_name}
         if connection_id:
             payload["connection_id"] = connection_id

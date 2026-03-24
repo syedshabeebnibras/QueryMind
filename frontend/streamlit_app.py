@@ -188,14 +188,27 @@ with upload_tab:
     )
     upload_table_name = st.text_input("Table name:", value="uploaded_table", key="upload_table_name")
     if uploaded_file is not None:
-        file_content = uploaded_file.read().decode("utf-8")
-        st.code(file_content[:2000], language="sql" if uploaded_file.name.endswith(".sql") else "text")
+        # Read file once and cache in session_state to survive reruns
+        if (
+            "uploaded_file_content" not in st.session_state
+            or st.session_state.get("uploaded_file_name") != uploaded_file.name
+        ):
+            st.session_state["uploaded_file_content"] = uploaded_file.read().decode("utf-8")
+            st.session_state["uploaded_file_name"] = uploaded_file.name
+
+        file_content = st.session_state["uploaded_file_content"]
+        file_name = st.session_state["uploaded_file_name"]
+
+        # Show preview and row count
+        lines = file_content.strip().split("\n")
+        st.caption(f"Rows: ~{len(lines) - 1} | Size: {len(file_content):,} chars")
+        st.code(file_content[:2000], language="sql" if file_name.endswith(".sql") else "text")
 
         if st.button("Import File", type="secondary", key="upload_import_btn"):
             conn_id = selected_connection["id"] if selected_connection else None
             with st.spinner("Importing..."):
                 try:
-                    if uploaded_file.name.endswith(".sql"):
+                    if file_name.endswith(".sql"):
                         result = asyncio.run(setup_schema(file_content, connection_id=conn_id))
                         if result["status"] == "success":
                             st.success(f"Done! {result['statements_executed']} statement(s) executed.")
@@ -214,6 +227,10 @@ with upload_tab:
                             st.error(f"Import failed: {result.get('error')}")
                 except Exception as e:
                     st.error(f"Error: {e}")
+    else:
+        # Clear cached content when file is removed
+        st.session_state.pop("uploaded_file_content", None)
+        st.session_state.pop("uploaded_file_name", None)
 
 st.divider()
 
