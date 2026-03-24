@@ -16,3 +16,17 @@ services:
         sync: false
       - key: PYTHON_VERSION
         value: "3.11.11"
+
+  - type: web
+    name: querymind-frontend
+    runtime: python
+    plan: free
+    region: oregon
+    rootDir: frontend
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run streamlit_app.py --server.port $PORT --server.address 0.0.0.0
+    envVars:
+      - key: BACKEND_URL
+        value: "https://querymind-backend-19wq.onrender.com"
+      - key: PYTHON_VERSION
+        value: "3.11.11"
