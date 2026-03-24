@@ -100,7 +100,7 @@ class FewShotExampleOut(BaseModel):
 class TableDataRequest(BaseModel):
     """Request to import raw table data (markdown, CSV, TSV) into the database."""
 
-    table_data: str = Field(..., min_length=1, max_length=200000, description="Raw table data (markdown, CSV, or TSV)")
+    table_data: str = Field(..., min_length=1, max_length=100_000_000, description="Raw table data (markdown, CSV, or TSV)")
     table_name: str = Field("user_table", min_length=1, max_length=100, description="Name for the table")
     connection_id: uuid.UUID | None = Field(None, description="Target connection ID")
 
