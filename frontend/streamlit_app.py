@@ -266,7 +266,7 @@ nl_query = st.text_area(
 
 col1, col2 = st.columns([1, 4])
 with col1:
-    run_button = st.button("Run Query", type="primary", use_container_width=True)
+    run_button = st.button("Run Query", type="primary", width="stretch")
 
 if run_button and nl_query.strip():
     conn_id = selected_connection["id"] if selected_connection else None
@@ -290,7 +290,7 @@ if run_button and nl_query.strip():
                 if result["rows"]:
                     st.subheader(f"Results ({result['row_count']} rows)")
                     df = pd.DataFrame(result["rows"], columns=result["columns"])
-                    st.dataframe(df, use_container_width=True)
+                    st.dataframe(df, width="stretch")
 
                     # --- Chart for numeric columns ---
                     numeric_cols = df.select_dtypes(include="number").columns.tolist()
