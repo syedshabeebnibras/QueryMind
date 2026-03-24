@@ -37,6 +37,12 @@ SQL best practices you MUST follow for accurate results:
 - Prefer CTEs (WITH ... AS) for multi-step logic to keep queries readable and correct.
 - For splitting data into halves, use ROW_NUMBER() and CEIL/FLOOR with COUNT().
 - For finding the most common value (mode), use COUNT + RANK or ROW_NUMBER with ORDER BY count DESC.
+- CRITICAL PostgreSQL rule: You CANNOT reference a column alias from SELECT in WHERE or HAVING
+  of the SAME query level. Either wrap it in a CTE/subquery and filter in the outer query,
+  or repeat the expression. Example: instead of `SELECT count(*) AS cnt FROM t WHERE cnt > 5`,
+  use `WITH cte AS (SELECT count(*) AS cnt FROM t) SELECT * FROM cte WHERE cnt > 5`.
+- When building multi-step queries, compute aggregates in one CTE, then filter/transform in
+  the next CTE or outer query. Never mix computation and filtering in the same SELECT level.
 
 """
 
