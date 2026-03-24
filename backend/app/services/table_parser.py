@@ -13,6 +13,57 @@ class TableParseError(Exception):
     """Raised when table data cannot be parsed."""
 
 
+def parse_table_data(
+    raw_data: str, table_name: str = "user_table"
+) -> tuple[str, list[str], list[str], list[tuple]]:
+    """Parse raw table data and return (table_name, headers, col_types, rows).
+
+    Returns structured data for bulk insert instead of SQL strings.
+    """
+    raw_data = raw_data.strip()
+    if not raw_data:
+        raise TableParseError("No data provided.")
+
+    if "|" in raw_data.split("\n")[0]:
+        headers, rows = _parse_markdown_table(raw_data)
+    elif "\t" in raw_data.split("\n")[0]:
+        headers, rows = _parse_delimited(raw_data, delimiter="\t")
+    else:
+        headers, rows = _parse_delimited(raw_data, delimiter=",")
+
+    if not headers:
+        raise TableParseError("Could not detect column headers.")
+    if not rows:
+        raise TableParseError("No data rows found.")
+
+    clean_headers = [_clean_column_name(h) for h in headers]
+    col_types = [_infer_type(clean_headers[i], [row[i] for row in rows]) for i in range(len(clean_headers))]
+    table_name = _clean_column_name(table_name)
+
+    # Convert values to Python types for parameterized insert
+    typed_rows = []
+    for row in rows:
+        typed_row = []
+        for i, val in enumerate(row):
+            typed_row.append(_coerce_value(val, col_types[i]))
+        typed_rows.append(tuple(typed_row))
+
+    return table_name, clean_headers, col_types, typed_rows
+
+
+def _coerce_value(value: str, col_type: str):
+    """Convert a string value to the appropriate Python type."""
+    if not value or value.lower() in ("null", "none", "n/a"):
+        return None
+    if col_type == "INTEGER":
+        return int(value.replace(",", ""))
+    if col_type == "NUMERIC":
+        return float(value.replace(",", ""))
+    if col_type == "BOOLEAN":
+        return value.lower() in ("true", "yes", "1")
+    return value
+
+
 def parse_table_to_sql(raw_data: str, table_name: str = "user_table") -> str:
     """Parse raw table data and return CREATE TABLE + INSERT INTO SQL.
 

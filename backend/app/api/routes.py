@@ -26,7 +26,7 @@ from app.schemas.query import (
 )
 from app.services.orchestrator import run_query_pipeline
 from app.services.schema_setup import SchemaSetupError, execute_setup_sql
-from app.services.table_parser import TableParseError, parse_table_to_sql
+from app.services.table_parser import TableParseError, parse_table_data, parse_table_to_sql
 
 router = APIRouter()
 
@@ -108,8 +108,13 @@ async def import_table(
 ) -> TableDataResponse:
     """Import raw table data (markdown, CSV, TSV) into the target database.
 
-    Parses the data, infers types, creates the table, and inserts all rows.
+    Uses bulk insert (execute_values) for fast imports of large datasets.
     """
+    import psycopg2
+    from psycopg2.extras import execute_values
+
+    from app.services.schema_setup import _get_write_url
+
     # Resolve target URL
     target_url: str | None = None
     if request.connection_id:
@@ -122,39 +127,60 @@ async def import_table(
         target_url = conn.database_url
 
     try:
-        # Parse raw data into SQL
-        generated_sql = parse_table_to_sql(request.table_data, request.table_name)
+        # Parse into structured data (no SQL string generation)
+        table_name, headers, col_types, rows = parse_table_data(
+            request.table_data, request.table_name
+        )
 
-        # Execute it via the schema setup service
-        summary = execute_setup_sql(generated_sql, target_database_url=target_url)
+        # Build CREATE TABLE DDL
+        col_defs = ", ".join(f"{h} {t}" for h, t in zip(headers, col_types))
+        create_sql = f"CREATE TABLE {table_name} ({col_defs})"
+        drop_sql = f"DROP TABLE IF EXISTS {table_name} CASCADE"
 
-        # Extract column info from the generated SQL for the response
-        lines = generated_sql.split("\n")
-        create_line = lines[0] if lines else ""
-        # Count INSERT rows
-        row_count = generated_sql.count("(") - 1  # subtract CREATE TABLE parens
-        # Rough column extraction
-        import re
-        col_matches = re.findall(r"INSERT INTO \w+ \((.+?)\) VALUES", generated_sql)
-        columns = [c.strip() for c in col_matches[0].split(",")] if col_matches else []
+        # Bulk insert using execute_values
+        db_url = _get_write_url(target_url or settings.target_database_url)
+        pg_conn = psycopg2.connect(db_url)
+        try:
+            pg_conn.autocommit = False
+            with pg_conn.cursor() as cur:
+                cur.execute(drop_sql)
+                cur.execute(create_sql)
+
+                col_list = ", ".join(headers)
+                placeholders = ", ".join(["%s"] * len(headers))
+                insert_sql = f"INSERT INTO {table_name} ({col_list}) VALUES %s"
+                execute_values(cur, insert_sql, rows, page_size=1000)
+
+            pg_conn.commit()
+        except Exception as e:
+            pg_conn.rollback()
+            raise e
+        finally:
+            pg_conn.close()
+
+        # Invalidate schema cache
+        from app.services.schema_context import _schema_cache
+        _schema_cache.clear()
+
+        generated_sql = f"{drop_sql};\n{create_sql};\n-- {len(rows)} rows inserted via bulk import"
 
         await log.ainfo(
             "table_imported",
-            table_name=request.table_name,
-            columns=len(columns),
-            rows=row_count,
+            table_name=table_name,
+            columns=len(headers),
+            rows=len(rows),
         )
         return TableDataResponse(
             status="success",
-            table_name=request.table_name,
-            columns=columns,
-            row_count=row_count,
+            table_name=table_name,
+            columns=headers,
+            row_count=len(rows),
             generated_sql=generated_sql,
         )
     except TableParseError as e:
         return TableDataResponse(status="error", error=f"Parse error: {e}")
-    except SchemaSetupError as e:
-        return TableDataResponse(status="error", error=f"Setup error: {e}")
+    except Exception as e:
+        return TableDataResponse(status="error", error=f"Import error: {e}")
 
 
 # --- Schema setup ---
