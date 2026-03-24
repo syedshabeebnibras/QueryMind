@@ -1,6 +1,8 @@
 """QueryMind Streamlit UI — NL-to-SQL with feedback and history."""
 
 import asyncio
+import threading
+import time
 import uuid
 
 import pandas as pd
@@ -20,7 +22,26 @@ from api_client import (
     run_query,
     setup_schema,
     submit_feedback,
+    BACKEND_URL,
 )
+
+
+# --- Keep-alive: ping backend every 5 minutes to prevent Render cold starts ---
+def _keep_alive_loop():
+    import httpx
+    while True:
+        try:
+            httpx.get(f"{BACKEND_URL}/health", timeout=10)
+        except Exception:
+            pass
+        time.sleep(300)  # 5 minutes
+
+
+if "keep_alive_started" not in st.session_state:
+    thread = threading.Thread(target=_keep_alive_loop, daemon=True)
+    thread.start()
+    st.session_state["keep_alive_started"] = True
+
 
 st.set_page_config(page_title="QueryMind", page_icon="🔍", layout="wide")
 st.title("QueryMind — Natural Language to SQL")
