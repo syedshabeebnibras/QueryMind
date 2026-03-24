@@ -280,96 +280,10 @@ if run_button and nl_query.strip():
                     connection_id=conn_id,
                 )
             )
-
-            if result["status"] == "success":
-                # --- SQL Display ---
-                st.subheader("Generated SQL")
-                st.code(result["final_sql"], language="sql")
-
-                # --- Results Table ---
-                if result["rows"]:
-                    st.subheader(f"Results ({result['row_count']} rows)")
-                    df = pd.DataFrame(result["rows"], columns=result["columns"])
-                    st.dataframe(df, width="stretch")
-
-                    # --- Chart for numeric columns ---
-                    numeric_cols = df.select_dtypes(include="number").columns.tolist()
-                    if numeric_cols and len(df) > 1:
-                        st.subheader("Chart")
-                        non_numeric = [c for c in df.columns if c not in numeric_cols]
-                        if non_numeric:
-                            chart_df = df.set_index(non_numeric[0])[numeric_cols]
-                            st.bar_chart(chart_df)
-                        else:
-                            st.bar_chart(df[numeric_cols])
-
-                # --- Metrics ---
-                col_m1, col_m2, col_m3, col_m4 = st.columns(4)
-                col_m1.metric("Runtime", f"{result['runtime_ms']:.0f}ms")
-                col_m2.metric("Rows", result["row_count"])
-                if result.get("explain_summary"):
-                    col_m3.metric("EXPLAIN Cost", f"{result['explain_summary']['total_cost']:.0f}")
-                    col_m4.metric("Est. Rows", f"{result['explain_summary']['estimated_rows']:,}")
-
-                # --- Validation ---
-                if result.get("validation_summary"):
-                    vs = result["validation_summary"]
-                    if vs["success"]:
-                        st.success(
-                            f"Validation passed: {vs['expectations_passed']}/{vs['expectations_evaluated']} expectations"
-                        )
-                    else:
-                        st.warning(
-                            f"Validation issues: {vs['expectations_passed']}/{vs['expectations_evaluated']} passed"
-                        )
-                        for detail in vs.get("details", []):
-                            if not detail["success"]:
-                                st.text(f"  Failed: {detail['expectation']}")
-
-                # --- Attempted SQLs (debug) ---
-                if len(result.get("attempted_sqls", [])) > 1:
-                    with st.expander("Self-correction attempts"):
-                        for i, sql in enumerate(result["attempted_sqls"]):
-                            st.text(f"Attempt {i + 1}:")
-                            st.code(sql, language="sql")
-
-                # --- Feedback ---
-                st.subheader("Feedback")
-                st.session_state["last_query_id"] = result["query_id"]
-
-                fcol1, fcol2 = st.columns(2)
-                with fcol1:
-                    if st.button("👍 Good result"):
-                        asyncio.run(submit_feedback(result["query_id"], rating=5))
-                        st.success("Thanks for your feedback!")
-                with fcol2:
-                    if st.button("👎 Bad result"):
-                        st.session_state["show_correction"] = True
-
-                if st.session_state.get("show_correction"):
-                    corrected = st.text_area("Correct SQL (optional):", key="corrected_sql")
-                    notes = st.text_input("Notes (optional):", key="feedback_notes")
-                    if st.button("Submit Correction"):
-                        asyncio.run(
-                            submit_feedback(
-                                result["query_id"],
-                                rating=1,
-                                corrected_sql=corrected or None,
-                                notes=notes or None,
-                            )
-                        )
-                        st.success("Correction saved — it will improve future queries!")
-                        st.session_state["show_correction"] = False
-
-            else:
-                st.error(f"Query failed: {result.get('error', 'Unknown error')}")
-                if result.get("attempted_sqls"):
-                    with st.expander("Attempted SQL"):
-                        for i, sql in enumerate(result["attempted_sqls"]):
-                            st.text(f"Attempt {i + 1}:")
-                            st.code(sql, language="sql")
-
+            st.session_state["last_result"] = result
+            st.session_state.pop("show_correction", None)
         except Exception as e:
+            st.session_state["last_result"] = None
             error_msg = str(e) if str(e) else repr(e)
             st.error(f"Error: {error_msg}")
             import traceback
@@ -378,3 +292,97 @@ if run_button and nl_query.strip():
 
 elif run_button:
     st.warning("Please enter a question first.")
+
+# --- Display results (persists across reruns) ---
+result = st.session_state.get("last_result")
+if result and result["status"] == "success":
+    # --- SQL Display ---
+    st.subheader("Generated SQL")
+    st.code(result["final_sql"], language="sql")
+
+    # --- Results Table ---
+    if result["rows"]:
+        st.subheader(f"Results ({result['row_count']} rows)")
+        df = pd.DataFrame(result["rows"], columns=result["columns"])
+        st.dataframe(df, width="stretch")
+
+        # --- Chart for numeric columns ---
+        numeric_cols = df.select_dtypes(include="number").columns.tolist()
+        if numeric_cols and len(df) > 1:
+            st.subheader("Chart")
+            non_numeric = [c for c in df.columns if c not in numeric_cols]
+            if non_numeric:
+                chart_df = df.set_index(non_numeric[0])[numeric_cols]
+                st.bar_chart(chart_df)
+            else:
+                st.bar_chart(df[numeric_cols])
+
+    # --- Metrics ---
+    col_m1, col_m2, col_m3, col_m4 = st.columns(4)
+    col_m1.metric("Runtime", f"{result['runtime_ms']:.0f}ms")
+    col_m2.metric("Rows", result["row_count"])
+    if result.get("explain_summary"):
+        col_m3.metric("EXPLAIN Cost", f"{result['explain_summary']['total_cost']:.0f}")
+        col_m4.metric("Est. Rows", f"{result['explain_summary']['estimated_rows']:,}")
+
+    # --- Validation ---
+    if result.get("validation_summary"):
+        vs = result["validation_summary"]
+        if vs["success"]:
+            st.success(
+                f"Validation passed: {vs['expectations_passed']}/{vs['expectations_evaluated']} expectations"
+            )
+        else:
+            st.warning(
+                f"Validation issues: {vs['expectations_passed']}/{vs['expectations_evaluated']} passed"
+            )
+            for detail in vs.get("details", []):
+                if not detail["success"]:
+                    st.text(f"  Failed: {detail['expectation']}")
+
+    # --- Attempted SQLs (debug) ---
+    if len(result.get("attempted_sqls", [])) > 1:
+        with st.expander("Self-correction attempts"):
+            for i, sql in enumerate(result["attempted_sqls"]):
+                st.text(f"Attempt {i + 1}:")
+                st.code(sql, language="sql")
+
+    # --- Feedback ---
+    st.subheader("Feedback")
+    fcol1, fcol2 = st.columns(2)
+    with fcol1:
+        if st.button("Good result", type="primary", key="good_feedback"):
+            asyncio.run(submit_feedback(result["query_id"], rating=5))
+            st.success("Thanks for your feedback!")
+    with fcol2:
+        if st.button("Bad result", type="secondary", key="bad_feedback"):
+            st.session_state["show_correction"] = True
+
+    if st.session_state.get("show_correction"):
+        corrected = st.text_area(
+            "Paste the correct SQL:",
+            height=200,
+            key="corrected_sql",
+            placeholder="WITH cte AS (\n  SELECT ...\n)\nSELECT * FROM cte WHERE ...",
+        )
+        notes = st.text_input("What was wrong? (optional):", key="feedback_notes")
+        if st.button("Submit Correction", type="primary", key="submit_correction"):
+            asyncio.run(
+                submit_feedback(
+                    result["query_id"],
+                    rating=1,
+                    corrected_sql=corrected or None,
+                    notes=notes or None,
+                )
+            )
+            st.success("Correction saved — it will improve future queries!")
+            st.session_state["show_correction"] = False
+            st.rerun()
+
+elif result and result["status"] != "success":
+    st.error(f"Query failed: {result.get('error', 'Unknown error')}")
+    if result.get("attempted_sqls"):
+        with st.expander("Attempted SQL"):
+            for i, sql in enumerate(result["attempted_sqls"]):
+                st.text(f"Attempt {i + 1}:")
+                st.code(sql, language="sql")
