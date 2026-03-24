@@ -240,12 +240,96 @@ _DESIGN_TOKENS = """
         letter-spacing: -0.01em !important;
     }
 
-    /* ── Inputs ── */
-    input, textarea, select, [data-testid="stSelectbox"] {
+    /* ── Inputs & form elements ── */
+    input, textarea, select,
+    [data-testid="stSelectbox"],
+    [data-testid="stMultiSelect"],
+    [data-testid="stNumberInput"] input,
+    [data-testid="stDateInput"] input {
         font-family: var(--font-body) !important;
         font-size: var(--text-base) !important;
         letter-spacing: -0.008em !important;
     }
+
+    /* ── Streamlit widget labels ── */
+    .stSelectbox label,
+    .stMultiSelect label,
+    .stTextInput label,
+    .stTextArea label,
+    .stNumberInput label,
+    .stDateInput label,
+    .stCheckbox label,
+    .stRadio label,
+    .stSlider label,
+    .stFileUploader label,
+    [data-testid="stWidgetLabel"] {
+        font-family: var(--font-body) !important;
+        font-size: var(--text-sm) !important;
+        font-weight: var(--font-weight-medium) !important;
+        letter-spacing: -0.005em !important;
+        color: var(--qm-text-secondary) !important;
+    }
+
+    /* ── Streamlit metric widget ── */
+    [data-testid="stMetric"] {
+        font-family: var(--font-display) !important;
+    }
+    [data-testid="stMetricValue"] {
+        font-family: var(--font-display) !important;
+        font-weight: var(--font-weight-semibold) !important;
+        letter-spacing: -0.02em !important;
+    }
+    [data-testid="stMetricLabel"] {
+        font-family: var(--font-body) !important;
+        font-size: var(--text-xs) !important;
+        font-weight: var(--font-weight-medium) !important;
+        letter-spacing: 0.02em !important;
+        text-transform: uppercase;
+    }
+
+    /* ── Streamlit tabs ── */
+    .stTabs [data-baseweb="tab-list"] button {
+        font-family: var(--font-body) !important;
+        font-size: var(--text-sm) !important;
+        font-weight: var(--font-weight-medium) !important;
+        letter-spacing: -0.005em !important;
+    }
+
+    /* ── Streamlit radio / checkbox text ── */
+    .stRadio > div > label > div:last-child,
+    .stCheckbox > label > div:last-child {
+        font-family: var(--font-body) !important;
+        font-size: var(--text-base) !important;
+    }
+
+    /* ── Sidebar typography ── */
+    [data-testid="stSidebar"],
+    [data-testid="stSidebar"] * {
+        font-family: var(--font-body);
+    }
+    [data-testid="stSidebar"] h1,
+    [data-testid="stSidebar"] h2,
+    [data-testid="stSidebar"] h3 {
+        font-family: var(--font-display);
+        letter-spacing: -0.02em;
+    }
+    [data-testid="stSidebar"] .stSelectbox label,
+    [data-testid="stSidebar"] .stTextInput label {
+        font-size: var(--text-xs) !important;
+    }
+
+    /* ── Streamlit toast / snackbar ── */
+    [data-testid="stToast"] * {
+        font-family: var(--font-body) !important;
+    }
+
+    /* ── Streamlit info/warning/error/success boxes ── */
+    [data-testid="stAlert"] * {
+        font-family: var(--font-body) !important;
+        font-size: var(--text-sm) !important;
+        line-height: var(--leading-normal) !important;
+    }
+
     [data-testid="stAppViewContainer"],
     [data-testid="stApp"] {
         background: var(--background);
@@ -926,7 +1010,7 @@ _DESIGN_TOKENS = """
     }
     .qm-metrics-strip .val {
         color: var(--qm-text-secondary);
-        font-weight: 550;
+        font-weight: var(--font-weight-medium);
     }
 
     /* ── User badge ── */
