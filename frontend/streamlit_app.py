@@ -47,31 +47,39 @@ _DESIGN_TOKENS = """
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
     :root {
-        --qm-bg-deep:      #0a0a0c;
-        --qm-bg-base:      #121214;
-        --qm-bg-raised:    #1a1a1d;
-        --qm-bg-surface:   #1f1f23;
-        --qm-bg-hover:     #26262b;
-        --qm-border:       rgba(228, 228, 231, 0.06);
-        --qm-border-hover: rgba(228, 228, 231, 0.12);
-        --qm-border-focus: rgba(138, 143, 152, 0.3);
-        --qm-text-primary: #e4e4e7;
-        --qm-text-secondary: rgba(228, 228, 231, 0.55);
-        --qm-text-tertiary: rgba(228, 228, 231, 0.3);
-        --qm-text-ghost:   rgba(228, 228, 231, 0.18);
-        --qm-accent:       #8a8f98;
-        --qm-accent-glow:  rgba(138, 143, 152, 0.08);
-        --qm-green:        rgba(74, 222, 128, 0.7);
+        --qm-bg-deep:      #08080a;
+        --qm-bg-base:      #0e0e11;
+        --qm-bg-raised:    #161619;
+        --qm-bg-surface:   #1c1c20;
+        --qm-bg-hover:     #232328;
+        --qm-bg-elevated:  #2a2a30;
+        --qm-border:       rgba(255, 255, 255, 0.05);
+        --qm-border-hover: rgba(255, 255, 255, 0.1);
+        --qm-border-focus: rgba(138, 143, 152, 0.35);
+        --qm-text-primary: #f0f0f3;
+        --qm-text-secondary: rgba(240, 240, 243, 0.55);
+        --qm-text-tertiary: rgba(240, 240, 243, 0.3);
+        --qm-text-ghost:   rgba(240, 240, 243, 0.15);
+        --qm-accent:       #9da3ad;
+        --qm-accent-bright:#b8bcc5;
+        --qm-accent-glow:  rgba(157, 163, 173, 0.08);
+        --qm-green:        #4ade80;
         --qm-green-bg:     rgba(74, 222, 128, 0.06);
-        --qm-red:          rgba(248, 113, 113, 0.7);
+        --qm-red:          #f87171;
         --qm-red-bg:       rgba(248, 113, 113, 0.06);
-        --qm-radius-sm:    8px;
-        --qm-radius-md:    12px;
-        --qm-radius-lg:    16px;
-        --qm-radius-xl:    20px;
+        --qm-radius-sm:    10px;
+        --qm-radius-md:    14px;
+        --qm-radius-lg:    18px;
+        --qm-radius-xl:    24px;
         --qm-font:         'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
-        --qm-spring:       cubic-bezier(0.16, 1, 0.3, 1);
+        --qm-spring:       cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        --qm-spring-soft:  cubic-bezier(0.16, 1, 0.3, 1);
         --qm-ease:         cubic-bezier(0.4, 0, 0.2, 1);
+        --qm-ease-out:     cubic-bezier(0, 0, 0.2, 1);
+        --qm-shadow-sm:    0 1px 2px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.15);
+        --qm-shadow-md:    0 4px 16px rgba(0,0,0,0.25), 0 2px 4px rgba(0,0,0,0.15);
+        --qm-shadow-lg:    0 12px 40px rgba(0,0,0,0.35), 0 4px 12px rgba(0,0,0,0.2);
+        --qm-shadow-glow:  0 0 20px rgba(157, 163, 173, 0.04), 0 0 40px rgba(157, 163, 173, 0.02);
     }
 
     /* ── Reset ── */
@@ -82,297 +90,407 @@ _DESIGN_TOKENS = """
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }
-    [data-testid="stAppViewContainer"] {
-        background: var(--qm-bg-deep);
-    }
+    [data-testid="stAppViewContainer"],
     [data-testid="stApp"] {
         background: var(--qm-bg-deep);
+        background-image:
+            radial-gradient(ellipse 80% 50% at 50% -20%, rgba(157,163,173,0.03) 0%, transparent 70%),
+            radial-gradient(ellipse 60% 40% at 80% 60%, rgba(80,80,120,0.02) 0%, transparent 60%);
     }
 
-    /* ── Animations ── */
+    /* ── Keyframes ── */
     @keyframes fadeSlideUp {
-        from { opacity: 0; transform: translateY(20px); }
+        from { opacity: 0; transform: translateY(24px) scale(0.98); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes fadeSlideDown {
+        from { opacity: 0; transform: translateY(-12px); }
         to   { opacity: 1; transform: translateY(0); }
     }
     @keyframes fadeIn {
         from { opacity: 0; }
         to   { opacity: 1; }
     }
+    @keyframes scaleIn {
+        from { opacity: 0; transform: scale(0.92); }
+        to   { opacity: 1; transform: scale(1); }
+    }
     @keyframes shimmer {
         0%   { background-position: -200% 0; }
         100% { background-position: 200% 0; }
     }
     @keyframes pulseGlow {
-        0%, 100% { box-shadow: 0 0 15px rgba(138, 143, 152, 0.04); }
-        50%      { box-shadow: 0 0 25px rgba(138, 143, 152, 0.08); }
+        0%, 100% { box-shadow: var(--qm-shadow-glow); }
+        50%      { box-shadow: 0 0 30px rgba(157, 163, 173, 0.07), 0 0 60px rgba(157, 163, 173, 0.03); }
+    }
+    @keyframes borderGlow {
+        0%, 100% { border-color: var(--qm-border); }
+        50%      { border-color: rgba(157, 163, 173, 0.12); }
+    }
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50%      { transform: translateY(-4px); }
+    }
+    @keyframes revealLine {
+        from { width: 0; opacity: 0; }
+        to   { width: 100%; opacity: 1; }
+    }
+    @keyframes dotPulse {
+        0%, 100% { box-shadow: 0 0 4px rgba(74, 222, 128, 0.3); }
+        50%      { box-shadow: 0 0 10px rgba(74, 222, 128, 0.6); }
     }
 
-    /* ── Landing page ── */
+    /* ── Landing nav ── */
     .qm-landing-nav {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 1.25rem 3rem;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        background: rgba(10, 10, 12, 0.75);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 1rem 3rem;
+        position: sticky; top: 0; z-index: 100;
+        background: rgba(8, 8, 10, 0.6);
+        backdrop-filter: blur(24px) saturate(1.4);
+        -webkit-backdrop-filter: blur(24px) saturate(1.4);
         border-bottom: 0.5px solid var(--qm-border);
-        animation: fadeIn 0.4s var(--qm-spring) both;
+        animation: fadeSlideDown 0.5s var(--qm-spring-soft) both;
     }
     .qm-landing-nav .brand {
-        display: flex;
-        align-items: center;
-        gap: 10px;
+        display: flex; align-items: center; gap: 10px;
         text-decoration: none;
+        transition: opacity 0.2s ease;
     }
+    .qm-landing-nav .brand:hover { opacity: 0.85; }
     .qm-landing-nav .brand-icon {
-        width: 32px; height: 32px;
-        border-radius: 8px;
-        background: linear-gradient(135deg, var(--qm-bg-surface) 0%, var(--qm-bg-raised) 100%);
-        border: 0.5px solid var(--qm-border);
+        width: 34px; height: 34px;
+        border-radius: 9px;
+        background: linear-gradient(145deg, var(--qm-bg-surface) 0%, var(--qm-bg-raised) 100%);
+        border: 0.5px solid rgba(255,255,255,0.06);
         display: flex; align-items: center; justify-content: center;
-        font-size: 0.85rem; font-weight: 700; color: var(--qm-accent);
-        box-shadow: 0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03);
+        font-size: 0.9rem; font-weight: 700; color: var(--qm-accent-bright);
+        box-shadow: var(--qm-shadow-sm), inset 0 1px 0 rgba(255,255,255,0.04);
+        transition: all 0.3s var(--qm-spring);
+    }
+    .qm-landing-nav .brand:hover .brand-icon {
+        box-shadow: var(--qm-shadow-md), inset 0 1px 0 rgba(255,255,255,0.06);
+        transform: scale(1.05);
     }
     .qm-landing-nav .brand-text {
-        font-size: 1rem; font-weight: 600;
+        font-size: 1.05rem; font-weight: 650;
         color: var(--qm-text-primary);
-        letter-spacing: -0.3px;
+        letter-spacing: -0.4px;
     }
     .qm-landing-nav .nav-links {
-        display: flex; gap: 2rem; align-items: center;
+        display: flex; gap: 2.25rem; align-items: center;
     }
     .qm-landing-nav .nav-links a {
         font-size: 0.8rem; font-weight: 450;
-        color: var(--qm-text-secondary);
-        text-decoration: none;
-        letter-spacing: 0.2px;
-        transition: color 0.2s var(--qm-ease);
+        color: var(--qm-text-tertiary);
+        text-decoration: none; letter-spacing: 0.3px;
+        padding: 4px 0;
+        position: relative;
+        transition: color 0.25s var(--qm-ease);
+    }
+    .qm-landing-nav .nav-links a::after {
+        content: '';
+        position: absolute; bottom: -2px; left: 0; right: 0;
+        height: 1px;
+        background: var(--qm-accent);
+        transform: scaleX(0);
+        transition: transform 0.25s var(--qm-spring);
+        transform-origin: center;
     }
     .qm-landing-nav .nav-links a:hover {
         color: var(--qm-text-primary);
     }
+    .qm-landing-nav .nav-links a:hover::after {
+        transform: scaleX(1);
+    }
 
+    /* ── Hero ── */
     .qm-landing-hero {
         text-align: center;
-        padding: 6rem 2rem 4rem 2rem;
-        max-width: 720px;
+        padding: 7rem 2rem 4.5rem 2rem;
+        max-width: 760px;
         margin: 0 auto;
-        animation: fadeSlideUp 0.6s 0.1s var(--qm-spring) both;
+        position: relative;
+        animation: fadeSlideUp 0.7s 0.15s var(--qm-spring-soft) both;
+    }
+    .qm-landing-hero::before {
+        content: '';
+        position: absolute;
+        top: -60px; left: 50%;
+        transform: translateX(-50%);
+        width: 500px; height: 400px;
+        background: radial-gradient(ellipse, rgba(157,163,173,0.04) 0%, transparent 70%);
+        pointer-events: none;
     }
     .qm-landing-hero .badge {
-        display: inline-block;
-        font-size: 0.68rem; font-weight: 500;
-        letter-spacing: 1px; text-transform: uppercase;
-        color: var(--qm-accent);
-        background: var(--qm-accent-glow);
-        border: 0.5px solid rgba(138, 143, 152, 0.12);
-        padding: 5px 14px;
-        border-radius: 20px;
-        margin-bottom: 1.75rem;
+        display: inline-flex; align-items: center; gap: 6px;
+        font-size: 0.68rem; font-weight: 550;
+        letter-spacing: 1.2px; text-transform: uppercase;
+        color: var(--qm-accent-bright);
+        background: linear-gradient(135deg, rgba(157,163,173,0.1) 0%, rgba(157,163,173,0.04) 100%);
+        border: 0.5px solid rgba(157, 163, 173, 0.12);
+        padding: 6px 16px;
+        border-radius: 24px;
+        margin-bottom: 2rem;
+        animation: pulseGlow 4s ease infinite;
+        backdrop-filter: blur(8px);
+    }
+    .qm-landing-hero .badge::before {
+        content: '';
+        width: 5px; height: 5px;
+        border-radius: 50%;
+        background: var(--qm-accent-bright);
+        animation: dotPulse 2s ease infinite;
     }
     .qm-landing-hero h1 {
-        font-size: 3.2rem; font-weight: 800;
-        letter-spacing: -1.8px; line-height: 1.08;
+        font-size: 3.5rem; font-weight: 800;
+        letter-spacing: -2px; line-height: 1.06;
         color: var(--qm-text-primary);
-        margin: 0 0 1.25rem 0;
+        margin: 0 0 1.5rem 0;
     }
     .qm-landing-hero h1 .gradient-text {
-        background: linear-gradient(135deg, #e4e4e7 0%, #8a8f98 50%, #5a5d63 100%);
-        background-size: 200% auto;
+        background: linear-gradient(
+            135deg,
+            #f0f0f3 0%,
+            #b8bcc5 30%,
+            #7a7e86 60%,
+            #b8bcc5 80%,
+            #f0f0f3 100%
+        );
+        background-size: 300% auto;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        animation: shimmer 6s linear infinite;
+        animation: shimmer 8s ease infinite;
     }
     .qm-landing-hero p {
-        font-size: 1.05rem; font-weight: 400;
+        font-size: 1.1rem; font-weight: 400;
         color: var(--qm-text-secondary);
-        line-height: 1.65;
-        margin: 0 auto 2.5rem auto;
-        max-width: 520px;
+        line-height: 1.7;
+        margin: 0 auto 3rem auto;
+        max-width: 540px;
     }
 
-    /* ── CTA button (HTML) ── */
+    /* ── CTA ── */
     .qm-cta-wrap {
-        display: flex;
-        justify-content: center;
-        gap: 0.75rem;
-        animation: fadeSlideUp 0.6s 0.3s var(--qm-spring) both;
+        display: flex; justify-content: center; gap: 0.75rem;
+        animation: fadeSlideUp 0.6s 0.35s var(--qm-spring-soft) both;
     }
 
     /* ── Feature cards ── */
     .qm-features {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 1.25rem;
-        max-width: 900px;
+        gap: 1rem;
+        max-width: 940px;
         margin: 0 auto;
-        padding: 0 2rem 4rem 2rem;
+        padding: 0 2rem 5rem 2rem;
     }
     .qm-feature-card {
-        background: linear-gradient(180deg, var(--qm-bg-raised) 0%, rgba(26,26,29,0.5) 100%);
+        background: linear-gradient(180deg, rgba(22,22,25,0.8) 0%, rgba(22,22,25,0.4) 100%);
         border: 0.5px solid var(--qm-border);
         border-radius: var(--qm-radius-lg);
-        padding: 1.75rem 1.5rem;
-        transition: all 0.3s var(--qm-spring);
-        animation: fadeSlideUp 0.5s var(--qm-spring) both;
+        padding: 2rem 1.5rem;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s var(--qm-spring-soft);
+        animation: fadeSlideUp 0.55s var(--qm-spring-soft) both;
+        backdrop-filter: blur(8px);
     }
-    .qm-feature-card:nth-child(1) { animation-delay: 0.15s; }
-    .qm-feature-card:nth-child(2) { animation-delay: 0.25s; }
-    .qm-feature-card:nth-child(3) { animation-delay: 0.35s; }
-    .qm-feature-card:nth-child(4) { animation-delay: 0.45s; }
-    .qm-feature-card:nth-child(5) { animation-delay: 0.55s; }
-    .qm-feature-card:nth-child(6) { animation-delay: 0.65s; }
+    .qm-feature-card::before {
+        content: '';
+        position: absolute; top: 0; left: 0; right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(157,163,173,0.1), transparent);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+    }
+    .qm-feature-card::after {
+        content: '';
+        position: absolute; inset: 0;
+        border-radius: var(--qm-radius-lg);
+        background: radial-gradient(ellipse at 50% 0%, rgba(157,163,173,0.04) 0%, transparent 60%);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        pointer-events: none;
+    }
+    .qm-feature-card:nth-child(1) { animation-delay: 0.1s; }
+    .qm-feature-card:nth-child(2) { animation-delay: 0.18s; }
+    .qm-feature-card:nth-child(3) { animation-delay: 0.26s; }
+    .qm-feature-card:nth-child(4) { animation-delay: 0.34s; }
+    .qm-feature-card:nth-child(5) { animation-delay: 0.42s; }
+    .qm-feature-card:nth-child(6) { animation-delay: 0.5s; }
     .qm-feature-card:hover {
-        border-color: var(--qm-border-hover);
-        transform: translateY(-2px) scale(1.01);
-        box-shadow: 0 8px 32px rgba(0,0,0,0.2), 0 0 0 1px rgba(138,143,152,0.04);
+        border-color: rgba(157,163,173,0.12);
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: var(--qm-shadow-lg), 0 0 0 1px rgba(157,163,173,0.04);
     }
+    .qm-feature-card:hover::before,
+    .qm-feature-card:hover::after { opacity: 1; }
     .qm-feature-card .icon {
-        width: 36px; height: 36px;
-        border-radius: 10px;
-        background: var(--qm-bg-surface);
-        border: 0.5px solid var(--qm-border);
+        width: 40px; height: 40px;
+        border-radius: 11px;
+        background: linear-gradient(145deg, var(--qm-bg-surface), var(--qm-bg-elevated));
+        border: 0.5px solid rgba(255,255,255,0.05);
         display: flex; align-items: center; justify-content: center;
-        font-size: 1rem;
-        margin-bottom: 1rem;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        font-size: 1.05rem;
+        margin-bottom: 1.25rem;
+        box-shadow: var(--qm-shadow-sm);
+        transition: all 0.35s var(--qm-spring);
+    }
+    .qm-feature-card:hover .icon {
+        transform: scale(1.08) translateY(-2px);
+        box-shadow: var(--qm-shadow-md);
     }
     .qm-feature-card h3 {
-        font-size: 0.88rem; font-weight: 600;
+        font-size: 0.9rem; font-weight: 620;
         color: var(--qm-text-primary);
         margin: 0 0 0.5rem 0;
         letter-spacing: -0.2px;
+        transition: color 0.2s ease;
     }
+    .qm-feature-card:hover h3 { color: #fff; }
     .qm-feature-card p {
         font-size: 0.8rem; font-weight: 400;
         color: var(--qm-text-secondary);
-        line-height: 1.55;
-        margin: 0;
+        line-height: 1.6; margin: 0;
     }
 
     /* ── Section headings ── */
     .qm-section-heading {
         text-align: center;
-        padding: 3rem 2rem 2rem 2rem;
-        animation: fadeSlideUp 0.5s var(--qm-spring) both;
+        padding: 4rem 2rem 2.5rem 2rem;
+        animation: fadeSlideUp 0.55s var(--qm-spring-soft) both;
     }
     .qm-section-heading h2 {
-        font-size: 1.6rem; font-weight: 700;
-        letter-spacing: -0.8px;
+        font-size: 1.75rem; font-weight: 750;
+        letter-spacing: -1px;
         color: var(--qm-text-primary);
-        margin: 0 0 0.5rem 0;
+        margin: 0 0 0.6rem 0;
     }
     .qm-section-heading p {
-        font-size: 0.88rem;
+        font-size: 0.9rem;
         color: var(--qm-text-tertiary);
         margin: 0;
     }
 
-    /* ── Tech stack pills ── */
+    /* ── Tech pills ── */
     .qm-tech-grid {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.6rem;
+        display: flex; flex-wrap: wrap; gap: 0.6rem;
         justify-content: center;
-        max-width: 700px;
+        max-width: 720px;
         margin: 0 auto;
-        padding: 0 2rem 4rem 2rem;
-        animation: fadeSlideUp 0.5s 0.2s var(--qm-spring) both;
+        padding: 0 2rem 5rem 2rem;
+        animation: fadeSlideUp 0.5s 0.2s var(--qm-spring-soft) both;
     }
     .qm-tech-pill {
-        font-size: 0.75rem; font-weight: 500;
+        font-size: 0.76rem; font-weight: 500;
         color: var(--qm-text-secondary);
         background: var(--qm-bg-raised);
         border: 0.5px solid var(--qm-border);
-        padding: 6px 14px;
-        border-radius: 20px;
-        transition: all 0.2s var(--qm-ease);
+        padding: 7px 16px;
+        border-radius: 22px;
         letter-spacing: 0.2px;
+        transition: all 0.3s var(--qm-spring-soft);
+        cursor: default;
     }
     .qm-tech-pill:hover {
-        border-color: var(--qm-border-hover);
+        border-color: rgba(157,163,173,0.15);
         color: var(--qm-text-primary);
         background: var(--qm-bg-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     }
 
-    /* ── Security section ── */
+    /* ── Security grid ── */
     .qm-security-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
-        max-width: 700px;
+        gap: 0.75rem;
+        max-width: 720px;
         margin: 0 auto;
-        padding: 0 2rem 4rem 2rem;
-        animation: fadeSlideUp 0.5s 0.2s var(--qm-spring) both;
+        padding: 0 2rem 5rem 2rem;
+        animation: fadeSlideUp 0.5s 0.2s var(--qm-spring-soft) both;
     }
     .qm-security-item {
         display: flex; gap: 0.75rem; align-items: flex-start;
-        padding: 1rem 1.25rem;
-        background: var(--qm-bg-raised);
+        padding: 1.15rem 1.25rem;
+        background: linear-gradient(180deg, var(--qm-bg-raised) 0%, rgba(22,22,25,0.6) 100%);
         border: 0.5px solid var(--qm-border);
         border-radius: var(--qm-radius-md);
-        transition: all 0.25s var(--qm-spring);
+        transition: all 0.35s var(--qm-spring-soft);
+        backdrop-filter: blur(4px);
     }
     .qm-security-item:hover {
-        border-color: var(--qm-border-hover);
-        transform: translateY(-1px);
+        border-color: rgba(157,163,173,0.1);
+        transform: translateY(-2px) scale(1.01);
+        box-shadow: var(--qm-shadow-md);
     }
     .qm-security-item .dot {
         width: 6px; height: 6px;
         border-radius: 50%;
-        background: var(--qm-accent);
-        margin-top: 6px;
+        background: var(--qm-accent-bright);
+        margin-top: 7px;
         flex-shrink: 0;
-        box-shadow: 0 0 6px rgba(138, 143, 152, 0.3);
+        box-shadow: 0 0 8px rgba(157, 163, 173, 0.4);
+        animation: dotPulse 3s ease infinite;
     }
+    .qm-security-item:nth-child(2) .dot { animation-delay: 0.5s; }
+    .qm-security-item:nth-child(3) .dot { animation-delay: 1s; }
+    .qm-security-item:nth-child(4) .dot { animation-delay: 1.5s; }
+    .qm-security-item:nth-child(5) .dot { animation-delay: 2s; }
+    .qm-security-item:nth-child(6) .dot { animation-delay: 2.5s; }
     .qm-security-item .text h4 {
-        font-size: 0.82rem; font-weight: 600;
+        font-size: 0.84rem; font-weight: 600;
         color: var(--qm-text-primary);
-        margin: 0 0 0.25rem 0;
-        letter-spacing: -0.1px;
+        margin: 0 0 0.3rem 0;
     }
     .qm-security-item .text p {
-        font-size: 0.75rem;
+        font-size: 0.76rem;
         color: var(--qm-text-tertiary);
-        margin: 0; line-height: 1.5;
+        margin: 0; line-height: 1.55;
     }
 
     /* ── Footer ── */
     .qm-footer {
         text-align: center;
-        padding: 3rem 2rem;
+        padding: 3.5rem 2rem;
         border-top: 0.5px solid var(--qm-border);
-        animation: fadeIn 0.5s 0.4s var(--qm-spring) both;
+        animation: fadeIn 0.5s 0.4s var(--qm-spring-soft) both;
+        position: relative;
+    }
+    .qm-footer::before {
+        content: '';
+        position: absolute; top: 0; left: 50%;
+        transform: translateX(-50%);
+        width: 200px; height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(157,163,173,0.15), transparent);
     }
     .qm-footer p {
-        font-size: 0.75rem;
+        font-size: 0.76rem;
         color: var(--qm-text-ghost);
-        margin: 0;
-        letter-spacing: 0.2px;
+        margin: 0; letter-spacing: 0.3px;
     }
     .qm-footer a {
         color: var(--qm-text-tertiary);
         text-decoration: none;
         transition: color 0.2s ease;
+        position: relative;
+    }
+    .qm-footer a::after {
+        content: '';
+        position: absolute; bottom: -1px; left: 0; right: 0;
+        height: 0.5px; background: var(--qm-accent);
+        transform: scaleX(0);
+        transition: transform 0.25s var(--qm-spring);
     }
     .qm-footer a:hover { color: var(--qm-text-secondary); }
+    .qm-footer a:hover::after { transform: scaleX(1); }
 
-    /* ── Workspace layout ── */
-    .qm-workspace-container .block-container {
-        max-width: 780px;
-        padding-top: 2rem;
-    }
+    /* ── Workspace header ── */
     .qm-ws-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+        display: flex; align-items: center; justify-content: space-between;
         padding: 0 0 1.5rem 0;
-        animation: fadeSlideUp 0.4s var(--qm-spring) both;
+        animation: fadeSlideDown 0.45s var(--qm-spring-soft) both;
     }
     .qm-ws-header .brand {
         display: flex; align-items: center; gap: 10px;
@@ -380,28 +498,23 @@ _DESIGN_TOKENS = """
     .qm-ws-header .brand-icon {
         width: 30px; height: 30px;
         border-radius: 8px;
-        background: linear-gradient(135deg, var(--qm-bg-surface) 0%, var(--qm-bg-raised) 100%);
+        background: linear-gradient(145deg, var(--qm-bg-surface), var(--qm-bg-raised));
         border: 0.5px solid var(--qm-border);
         display: flex; align-items: center; justify-content: center;
-        font-size: 0.78rem; font-weight: 700; color: var(--qm-accent);
+        font-size: 0.78rem; font-weight: 700; color: var(--qm-accent-bright);
+        box-shadow: var(--qm-shadow-sm);
+        transition: all 0.3s var(--qm-spring);
+    }
+    .qm-ws-header .brand-icon:hover {
+        transform: scale(1.08);
     }
     .qm-ws-header .brand-text {
-        font-size: 0.9rem; font-weight: 600;
+        font-size: 0.92rem; font-weight: 620;
         color: var(--qm-text-primary);
         letter-spacing: -0.3px;
     }
-    .qm-ws-header .back-link {
-        font-size: 0.75rem; font-weight: 450;
-        color: var(--qm-text-tertiary);
-        letter-spacing: 0.2px;
-        cursor: pointer;
-        transition: color 0.2s ease;
-    }
-    .qm-ws-header .back-link:hover {
-        color: var(--qm-text-secondary);
-    }
 
-    /* ── Workspace inputs ── */
+    /* ── Inputs ── */
     .stTextArea textarea,
     .stTextInput input {
         background: var(--qm-bg-raised) !important;
@@ -410,16 +523,19 @@ _DESIGN_TOKENS = """
         color: var(--qm-text-primary) !important;
         font-family: var(--qm-font) !important;
         font-size: 0.88rem !important;
-        padding: 0.85rem 1rem !important;
-        transition: border-color 0.25s var(--qm-spring),
-                    box-shadow 0.25s var(--qm-spring) !important;
-        caret-color: var(--qm-accent) !important;
+        padding: 0.9rem 1.1rem !important;
+        transition: border-color 0.3s var(--qm-spring-soft),
+                    box-shadow 0.3s var(--qm-spring-soft),
+                    background 0.3s ease !important;
+        caret-color: var(--qm-accent-bright) !important;
     }
     .stTextArea textarea:focus,
     .stTextInput input:focus {
         border-color: var(--qm-border-focus) !important;
-        box-shadow: 0 0 0 3px rgba(138, 143, 152, 0.06),
-                    0 1px 2px rgba(0,0,0,0.2) !important;
+        background: var(--qm-bg-surface) !important;
+        box-shadow: 0 0 0 3px rgba(157, 163, 173, 0.06),
+                    0 2px 8px rgba(0,0,0,0.2),
+                    inset 0 0 0 0.5px rgba(157, 163, 173, 0.1) !important;
         outline: none !important;
     }
     .stTextArea textarea::placeholder,
@@ -431,31 +547,43 @@ _DESIGN_TOKENS = """
     /* ── Primary button ── */
     .stButton > button[kind="primary"],
     .stButton > button[data-testid="stBaseButton-primary"] {
-        background: linear-gradient(180deg, #2a2a2e 0%, #212124 100%) !important;
-        border: 0.5px solid rgba(228, 228, 231, 0.1) !important;
+        background: linear-gradient(180deg, #2c2c32 0%, #222226 100%) !important;
+        border: 0.5px solid rgba(255, 255, 255, 0.08) !important;
         border-radius: var(--qm-radius-sm) !important;
         color: var(--qm-text-primary) !important;
         font-family: var(--qm-font) !important;
-        font-weight: 500 !important;
+        font-weight: 550 !important;
         font-size: 0.86rem !important;
         letter-spacing: 0.1px !important;
-        padding: 0.65rem 1.5rem !important;
-        transition: all 0.2s var(--qm-spring) !important;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.25),
-                    inset 0 1px 0 rgba(255,255,255,0.04) !important;
+        padding: 0.7rem 1.5rem !important;
+        position: relative !important;
+        overflow: hidden !important;
+        transition: all 0.25s var(--qm-spring-soft) !important;
+        box-shadow: var(--qm-shadow-sm),
+                    inset 0 1px 0 rgba(255,255,255,0.05) !important;
+    }
+    .stButton > button[kind="primary"]::before,
+    .stButton > button[data-testid="stBaseButton-primary"]::before {
+        content: '';
+        position: absolute; inset: 0;
+        background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 50%);
+        pointer-events: none;
     }
     .stButton > button[kind="primary"]:hover,
     .stButton > button[data-testid="stBaseButton-primary"]:hover {
-        background: linear-gradient(180deg, #303034 0%, #28282c 100%) !important;
-        border-color: rgba(228, 228, 231, 0.15) !important;
-        box-shadow: 0 3px 12px rgba(0,0,0,0.3),
-                    inset 0 1px 0 rgba(255,255,255,0.05) !important;
-        transform: translateY(-0.5px) !important;
+        background: linear-gradient(180deg, #333338 0%, #2a2a2f 100%) !important;
+        border-color: rgba(255, 255, 255, 0.12) !important;
+        box-shadow: var(--qm-shadow-md),
+                    inset 0 1px 0 rgba(255,255,255,0.07),
+                    0 0 20px rgba(157, 163, 173, 0.05) !important;
+        transform: translateY(-1px) !important;
     }
     .stButton > button[kind="primary"]:active,
     .stButton > button[data-testid="stBaseButton-primary"]:active {
-        transform: scale(0.975) translateY(0) !important;
-        box-shadow: 0 0 0 rgba(0,0,0,0.15) !important;
+        transform: scale(0.95) translateY(0) !important;
+        box-shadow: 0 0 0 rgba(0,0,0,0.1),
+                    inset 0 2px 4px rgba(0,0,0,0.2) !important;
+        transition-duration: 0.1s !important;
     }
 
     /* ── Secondary buttons ── */
@@ -469,27 +597,32 @@ _DESIGN_TOKENS = """
         font-family: var(--qm-font) !important;
         font-weight: 500 !important;
         font-size: 0.8rem !important;
-        padding: 0.5rem 1.25rem !important;
-        transition: all 0.2s var(--qm-spring) !important;
+        padding: 0.55rem 1.25rem !important;
+        transition: all 0.25s var(--qm-spring-soft) !important;
+        position: relative !important;
+        overflow: hidden !important;
     }
     .stButton > button[kind="secondary"]:hover,
     .stButton > button[data-testid="stBaseButton-secondary"]:hover,
     .stButton > button:not([kind]):hover {
-        background: rgba(228, 228, 231, 0.03) !important;
+        background: rgba(255, 255, 255, 0.03) !important;
         border-color: var(--qm-border-hover) !important;
         color: var(--qm-text-primary) !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+        transform: translateY(-0.5px) !important;
     }
     .stButton > button[kind="secondary"]:active,
     .stButton > button[data-testid="stBaseButton-secondary"]:active,
     .stButton > button:not([kind]):active {
-        transform: scale(0.97) !important;
+        transform: scale(0.95) !important;
+        transition-duration: 0.1s !important;
     }
 
-    /* ── Expander ── */
+    /* ── Expander — glass panel ── */
     .streamlit-expanderHeader {
-        background: rgba(26, 26, 29, 0.6) !important;
-        backdrop-filter: blur(12px) !important;
-        -webkit-backdrop-filter: blur(12px) !important;
+        background: rgba(22, 22, 25, 0.5) !important;
+        backdrop-filter: blur(16px) saturate(1.2) !important;
+        -webkit-backdrop-filter: blur(16px) saturate(1.2) !important;
         border: 0.5px solid var(--qm-border) !important;
         border-radius: var(--qm-radius-sm) !important;
         font-family: var(--qm-font) !important;
@@ -497,17 +630,23 @@ _DESIGN_TOKENS = """
         font-weight: 500 !important;
         color: var(--qm-text-secondary) !important;
         letter-spacing: 0.2px !important;
-        padding: 0.7rem 1rem !important;
-        transition: all 0.25s var(--qm-spring) !important;
+        padding: 0.75rem 1.1rem !important;
+        transition: all 0.3s var(--qm-spring-soft) !important;
     }
     .streamlit-expanderHeader:hover {
         border-color: var(--qm-border-hover) !important;
         color: var(--qm-text-primary) !important;
+        background: rgba(28, 28, 32, 0.7) !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.12) !important;
     }
     [data-testid="stExpander"] {
-        border: 0.5px solid rgba(228, 228, 231, 0.03) !important;
+        border: 0.5px solid rgba(255, 255, 255, 0.03) !important;
         border-radius: var(--qm-radius-sm) !important;
         overflow: hidden;
+        transition: all 0.3s var(--qm-spring-soft);
+    }
+    [data-testid="stExpander"]:hover {
+        border-color: rgba(255, 255, 255, 0.05) !important;
     }
     [data-testid="stExpander"] details {
         border: none !important;
@@ -516,9 +655,10 @@ _DESIGN_TOKENS = """
     /* ── Code blocks ── */
     .stCodeBlock, pre, code { border-radius: var(--qm-radius-sm) !important; }
     [data-testid="stCodeBlock"] {
-        border: 0.5px solid rgba(228, 228, 231, 0.04) !important;
+        border: 0.5px solid rgba(255, 255, 255, 0.04) !important;
         border-radius: var(--qm-radius-sm) !important;
         overflow: hidden;
+        box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
     }
 
     /* ── Dataframe ── */
@@ -526,14 +666,15 @@ _DESIGN_TOKENS = """
         border: 0.5px solid var(--qm-border) !important;
         border-radius: var(--qm-radius-md) !important;
         overflow: hidden;
-        animation: fadeSlideUp 0.4s var(--qm-spring) both;
+        animation: scaleIn 0.45s var(--qm-spring-soft) both;
+        box-shadow: var(--qm-shadow-sm);
     }
 
     /* ── Sidebar ── */
     [data-testid="stSidebar"] {
-        background: rgba(14, 14, 16, 0.85) !important;
-        backdrop-filter: blur(24px) !important;
-        -webkit-backdrop-filter: blur(24px) !important;
+        background: rgba(10, 10, 12, 0.8) !important;
+        backdrop-filter: blur(28px) saturate(1.3) !important;
+        -webkit-backdrop-filter: blur(28px) saturate(1.3) !important;
         border-right: 0.5px solid var(--qm-border) !important;
     }
 
@@ -541,14 +682,23 @@ _DESIGN_TOKENS = """
     .qm-status-pill {
         display: inline-flex; align-items: center; gap: 6px;
         font-family: var(--qm-font);
-        font-size: 0.7rem; font-weight: 500;
-        letter-spacing: 0.5px; text-transform: uppercase;
-        padding: 5px 12px; border-radius: 20px;
+        font-size: 0.68rem; font-weight: 550;
+        letter-spacing: 0.6px; text-transform: uppercase;
+        padding: 5px 14px; border-radius: 22px;
+        transition: all 0.3s var(--qm-spring-soft);
     }
     .qm-status-pill.online {
         background: var(--qm-green-bg);
         color: var(--qm-green);
         border: 0.5px solid rgba(74, 222, 128, 0.1);
+        box-shadow: 0 0 12px rgba(74, 222, 128, 0.06);
+    }
+    .qm-status-pill.online::before {
+        content: '';
+        width: 5px; height: 5px;
+        border-radius: 50%;
+        background: var(--qm-green);
+        animation: dotPulse 2.5s ease infinite;
     }
     .qm-status-pill.offline {
         background: var(--qm-red-bg);
@@ -559,21 +709,29 @@ _DESIGN_TOKENS = """
     /* ── Sidebar labels ── */
     .qm-section-label {
         font-family: var(--qm-font);
-        font-size: 0.62rem; font-weight: 600;
-        letter-spacing: 1.5px; text-transform: uppercase;
+        font-size: 0.6rem; font-weight: 650;
+        letter-spacing: 1.8px; text-transform: uppercase;
         color: var(--qm-text-tertiary);
-        margin: 1rem 0 0.5rem 0;
+        margin: 1.25rem 0 0.5rem 0;
     }
     .qm-table-item {
         font-family: var(--qm-font); font-size: 0.8rem;
-        color: var(--qm-text-secondary); padding: 3px 0;
+        color: var(--qm-text-secondary);
+        padding: 4px 0;
+        transition: color 0.2s ease;
     }
+    .qm-table-item:hover { color: var(--qm-text-primary); }
     .qm-table-item code {
         font-size: 0.76rem;
-        color: rgba(228, 228, 231, 0.65);
-        background: rgba(228, 228, 231, 0.04);
-        padding: 2px 6px; border-radius: 4px;
+        color: rgba(240, 240, 243, 0.65);
+        background: rgba(255, 255, 255, 0.04);
+        padding: 2px 7px; border-radius: 5px;
         border: 0.5px solid var(--qm-border);
+        transition: all 0.2s ease;
+    }
+    .qm-table-item:hover code {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: var(--qm-border-hover);
     }
     .qm-table-item .cols {
         color: var(--qm-text-tertiary);
@@ -583,15 +741,15 @@ _DESIGN_TOKENS = """
     /* ── Result labels ── */
     .qm-label {
         font-family: var(--qm-font);
-        font-size: 0.62rem; font-weight: 600;
-        letter-spacing: 1.5px; text-transform: uppercase;
+        font-size: 0.6rem; font-weight: 650;
+        letter-spacing: 1.8px; text-transform: uppercase;
         color: var(--qm-text-tertiary);
         margin-bottom: 0.5rem;
     }
 
     /* ── Metrics strip ── */
     .qm-metrics-strip {
-        display: flex; gap: 1.25rem; padding: 0.5rem 0;
+        display: flex; gap: 1.25rem; padding: 0.6rem 0;
         font-family: var(--qm-font);
         font-size: 0.76rem;
         color: var(--qm-text-tertiary);
@@ -599,7 +757,7 @@ _DESIGN_TOKENS = """
     }
     .qm-metrics-strip .val {
         color: var(--qm-text-secondary);
-        font-weight: 500;
+        font-weight: 550;
     }
 
     /* ── User badge ── */
@@ -615,61 +773,89 @@ _DESIGN_TOKENS = """
         background: var(--qm-bg-raised) !important;
         border: 0.5px solid var(--qm-border) !important;
         border-radius: var(--qm-radius-sm) !important;
+        transition: all 0.25s ease !important;
+    }
+    [data-testid="stSelectbox"] > div > div:hover {
+        border-color: var(--qm-border-hover) !important;
     }
 
     /* ── File uploader ── */
     [data-testid="stFileUploader"] {
-        border: 0.5px dashed var(--qm-border) !important;
+        border: 0.5px dashed rgba(255, 255, 255, 0.06) !important;
         border-radius: var(--qm-radius-sm) !important;
-        transition: border-color 0.25s ease !important;
+        transition: all 0.3s var(--qm-spring-soft) !important;
+        padding: 1rem !important;
     }
     [data-testid="stFileUploader"]:hover {
-        border-color: var(--qm-border-hover) !important;
+        border-color: rgba(157, 163, 173, 0.15) !important;
+        background: rgba(255, 255, 255, 0.01) !important;
     }
 
-    /* ── Alerts, progress, toast ── */
+    /* ── Alerts ── */
     [data-testid="stAlert"] {
         border-radius: var(--qm-radius-sm) !important;
         border-width: 0.5px !important;
         font-size: 0.84rem !important;
+        backdrop-filter: blur(8px) !important;
     }
+
+    /* ── Progress bar ── */
     .stProgress > div > div {
-        background: rgba(138, 143, 152, 0.12) !important;
-        border-radius: 4px !important;
+        background: rgba(157, 163, 173, 0.08) !important;
+        border-radius: 6px !important;
+        overflow: hidden;
     }
     .stProgress > div > div > div {
-        background: linear-gradient(90deg, #8a8f98, #6b6f77) !important;
-        border-radius: 4px !important;
+        background: linear-gradient(90deg, var(--qm-accent), var(--qm-accent-bright), var(--qm-accent)) !important;
+        background-size: 200% auto !important;
+        animation: shimmer 2s linear infinite !important;
+        border-radius: 6px !important;
     }
+
+    /* ── Toast ── */
     [data-testid="stToast"] {
-        backdrop-filter: blur(12px) !important;
+        background: rgba(22, 22, 25, 0.85) !important;
+        backdrop-filter: blur(16px) saturate(1.3) !important;
         border: 0.5px solid var(--qm-border) !important;
-        border-radius: var(--qm-radius-sm) !important;
+        border-radius: var(--qm-radius-md) !important;
+        box-shadow: var(--qm-shadow-lg) !important;
+        animation: scaleIn 0.35s var(--qm-spring) both !important;
     }
+
+    /* ── Charts ── */
     [data-testid="stVegaLiteChart"] {
-        border: 0.5px solid rgba(228, 228, 231, 0.03) !important;
-        border-radius: var(--qm-radius-sm) !important;
-        overflow: hidden; padding: 0.5rem;
+        border: 0.5px solid rgba(255, 255, 255, 0.03) !important;
+        border-radius: var(--qm-radius-md) !important;
+        overflow: hidden; padding: 0.75rem;
+        background: rgba(22, 22, 25, 0.3) !important;
+        animation: fadeSlideUp 0.4s 0.1s var(--qm-spring-soft) both;
     }
+
     .stCaption, [data-testid="stCaption"] {
         font-family: var(--qm-font) !important;
     }
 
-    /* ── Subtle dividers ── */
+    /* ── Dividers ── */
     hr {
         border: none;
         border-top: 0.5px solid var(--qm-border);
-        margin: 1.5rem 0;
+        margin: 1.75rem 0;
     }
 
     /* ── Responsive ── */
     @media (max-width: 768px) {
-        .qm-landing-hero h1 { font-size: 2.2rem; letter-spacing: -1px; }
+        .qm-landing-hero h1 { font-size: 2.4rem; letter-spacing: -1.2px; }
+        .qm-landing-hero p { font-size: 0.95rem; }
         .qm-features { grid-template-columns: 1fr; }
         .qm-security-grid { grid-template-columns: 1fr; }
-        .qm-landing-nav { padding: 1rem 1.5rem; }
+        .qm-landing-nav { padding: 0.75rem 1.25rem; }
         .qm-landing-nav .nav-links { gap: 1rem; }
         .qm-landing-nav .nav-links a { font-size: 0.72rem; }
+        .qm-landing-hero { padding: 4rem 1.5rem 3rem 1.5rem; }
+    }
+    @media (max-width: 480px) {
+        .qm-landing-hero h1 { font-size: 1.8rem; }
+        .qm-landing-nav .nav-links { display: none; }
     }
 </style>
 """
