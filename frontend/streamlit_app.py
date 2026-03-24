@@ -44,42 +44,110 @@ st.set_page_config(page_title="QueryMind", page_icon="Q", layout="wide")
 # ──────────────────────────────────────────────────────────────
 _DESIGN_TOKENS = """
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
     :root {
-        --qm-bg-deep:      #08080a;
-        --qm-bg-base:      #0e0e11;
-        --qm-bg-raised:    #161619;
-        --qm-bg-surface:   #1c1c20;
-        --qm-bg-hover:     #232328;
-        --qm-bg-elevated:  #2a2a30;
-        --qm-border:       rgba(255, 255, 255, 0.05);
-        --qm-border-hover: rgba(255, 255, 255, 0.1);
-        --qm-border-focus: rgba(138, 143, 152, 0.35);
-        --qm-text-primary: #f0f0f3;
-        --qm-text-secondary: rgba(240, 240, 243, 0.55);
-        --qm-text-tertiary: rgba(240, 240, 243, 0.3);
-        --qm-text-ghost:   rgba(240, 240, 243, 0.15);
-        --qm-accent:       #9da3ad;
-        --qm-accent-bright:#b8bcc5;
-        --qm-accent-glow:  rgba(157, 163, 173, 0.08);
-        --qm-green:        #4ade80;
-        --qm-green-bg:     rgba(74, 222, 128, 0.06);
-        --qm-red:          #f87171;
-        --qm-red-bg:       rgba(248, 113, 113, 0.06);
-        --qm-radius-sm:    10px;
-        --qm-radius-md:    14px;
-        --qm-radius-lg:    18px;
-        --qm-radius-xl:    24px;
-        --qm-font:         'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
-        --qm-spring:       cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        --qm-spring-soft:  cubic-bezier(0.16, 1, 0.3, 1);
-        --qm-ease:         cubic-bezier(0.4, 0, 0.2, 1);
-        --qm-ease-out:     cubic-bezier(0, 0, 0.2, 1);
-        --qm-shadow-sm:    0 1px 2px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.15);
-        --qm-shadow-md:    0 4px 16px rgba(0,0,0,0.25), 0 2px 4px rgba(0,0,0,0.15);
-        --qm-shadow-lg:    0 12px 40px rgba(0,0,0,0.35), 0 4px 12px rgba(0,0,0,0.2);
-        --qm-shadow-glow:  0 0 20px rgba(157, 163, 173, 0.04), 0 0 40px rgba(157, 163, 173, 0.02);
+        /* ── Typography ── */
+        --font-weight-normal: 400;
+        --font-weight-medium: 500;
+
+        /* ── Syntactic Slate — Core palette ── */
+        --background:       #0a0a0b;
+        --foreground:        #e8e8ea;
+        --card:              #16161a;
+        --popover:           #1c1c21;
+        --surface-elevated:  #1c1c21;
+        --surface-base:      #16161a;
+        --surface-sunken:    #0a0a0b;
+
+        /* ── Accent & semantic ── */
+        --primary:           #e8e8ea;
+        --secondary:         #1f1f24;
+        --muted:             #28282e;
+        --accent:            #2c2c34;
+        --destructive:       #ff3b30;
+
+        /* ── Borders & inputs ── */
+        --border:            rgba(255, 255, 255, 0.08);
+        --input:             rgba(255, 255, 255, 0.05);
+        --input-background:  #1c1c21;
+        --switch-background: #3a3a40;
+        --ring:              rgba(255, 255, 255, 0.15);
+
+        /* ── Chart colors ── */
+        --chart-1: #007aff;
+        --chart-2: #5e5ce6;
+        --chart-3: #30d158;
+        --chart-4: #ff9f0a;
+        --chart-5: #ff375f;
+
+        /* ── Premium effects ── */
+        --glow-primary:      rgba(0, 122, 255, 0.15);
+        --glow-accent:       rgba(94, 92, 230, 0.12);
+
+        /* ── Radius ── */
+        --radius:            0.75rem;
+
+        /* ── Mapped aliases (used by component CSS) ── */
+        --qm-bg-deep:       var(--background);
+        --qm-bg-base:       var(--surface-sunken);
+        --qm-bg-raised:     var(--card);
+        --qm-bg-surface:    var(--surface-elevated);
+        --qm-bg-hover:      var(--muted);
+        --qm-bg-elevated:   var(--accent);
+        --qm-border:        var(--border);
+        --qm-border-hover:  rgba(255, 255, 255, 0.12);
+        --qm-border-focus:  var(--ring);
+        --qm-text-primary:  var(--foreground);
+        --qm-text-secondary: rgba(232, 232, 234, 0.55);
+        --qm-text-tertiary: rgba(232, 232, 234, 0.3);
+        --qm-text-ghost:    rgba(232, 232, 234, 0.15);
+        --qm-accent:        #9da3ad;
+        --qm-accent-bright: #b8bcc5;
+        --qm-accent-glow:   rgba(157, 163, 173, 0.08);
+        --qm-green:         var(--chart-3);
+        --qm-green-bg:      rgba(48, 209, 88, 0.06);
+        --qm-red:           var(--destructive);
+        --qm-red-bg:        rgba(255, 59, 48, 0.06);
+        --qm-radius-sm:     var(--radius);
+        --qm-radius-md:     calc(var(--radius) + 2px);
+        --qm-radius-lg:     calc(var(--radius) + 6px);
+        --qm-radius-xl:     calc(var(--radius) + 12px);
+        --qm-font:          'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+                             'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+                             'Helvetica Neue', sans-serif;
+        --qm-spring:        cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        --qm-spring-soft:   cubic-bezier(0.16, 1, 0.3, 1);
+        --qm-ease:          cubic-bezier(0.4, 0, 0.2, 1);
+        --qm-ease-out:      cubic-bezier(0, 0, 0.2, 1);
+        --qm-shadow-sm:     0 1px 2px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.15);
+        --qm-shadow-md:     0 4px 16px rgba(0,0,0,0.25), 0 2px 4px rgba(0,0,0,0.15);
+        --qm-shadow-lg:     0 12px 40px rgba(0,0,0,0.35), 0 4px 12px rgba(0,0,0,0.2);
+        --qm-shadow-glow:   0 0 20px rgba(157, 163, 173, 0.04), 0 0 40px rgba(157, 163, 173, 0.02);
+    }
+
+    /* ── Utility classes ── */
+    .glass-surface {
+        background: rgba(22, 22, 26, 0.55) !important;
+        backdrop-filter: blur(24px) saturate(1.4) !important;
+        -webkit-backdrop-filter: blur(24px) saturate(1.4) !important;
+        border: 0.5px solid var(--border) !important;
+    }
+    .premium-glow {
+        box-shadow: 0 0 20px var(--glow-primary), 0 0 40px var(--glow-accent);
+    }
+    .subtle-glow {
+        box-shadow: 0 0 15px var(--glow-primary);
+    }
+    .elevated-surface {
+        background: var(--surface-elevated);
+        border: 0.5px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--qm-shadow-md);
+    }
+    .premium-border {
+        border: 0.5px solid var(--border);
+        border-radius: var(--radius);
     }
 
     /* ── Reset ── */
@@ -87,15 +155,16 @@ _DESIGN_TOKENS = """
     .stDeployButton { display: none; }
     html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {
         font-family: var(--qm-font);
+        font-weight: var(--font-weight-normal);
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }
     [data-testid="stAppViewContainer"],
     [data-testid="stApp"] {
-        background: var(--qm-bg-deep);
+        background: var(--background);
         background-image:
-            radial-gradient(ellipse 80% 50% at 50% -20%, rgba(157,163,173,0.03) 0%, transparent 70%),
-            radial-gradient(ellipse 60% 40% at 80% 60%, rgba(80,80,120,0.02) 0%, transparent 60%);
+            radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0,122,255,0.03) 0%, transparent 70%),
+            radial-gradient(ellipse 60% 40% at 80% 60%, rgba(94,92,230,0.02) 0%, transparent 60%);
     }
 
     /* ── Keyframes ── */
@@ -120,12 +189,12 @@ _DESIGN_TOKENS = """
         100% { background-position: 200% 0; }
     }
     @keyframes pulseGlow {
-        0%, 100% { box-shadow: var(--qm-shadow-glow); }
-        50%      { box-shadow: 0 0 30px rgba(157, 163, 173, 0.07), 0 0 60px rgba(157, 163, 173, 0.03); }
+        0%, 100% { box-shadow: 0 0 15px var(--glow-primary); }
+        50%      { box-shadow: 0 0 30px var(--glow-primary), 0 0 60px var(--glow-accent); }
     }
     @keyframes borderGlow {
-        0%, 100% { border-color: var(--qm-border); }
-        50%      { border-color: rgba(157, 163, 173, 0.12); }
+        0%, 100% { border-color: var(--border); }
+        50%      { border-color: rgba(0, 122, 255, 0.15); }
     }
     @keyframes float {
         0%, 100% { transform: translateY(0); }
@@ -136,8 +205,8 @@ _DESIGN_TOKENS = """
         to   { width: 100%; opacity: 1; }
     }
     @keyframes dotPulse {
-        0%, 100% { box-shadow: 0 0 4px rgba(74, 222, 128, 0.3); }
-        50%      { box-shadow: 0 0 10px rgba(74, 222, 128, 0.6); }
+        0%, 100% { box-shadow: 0 0 4px var(--glow-primary); }
+        50%      { box-shadow: 0 0 12px var(--glow-primary), 0 0 20px var(--glow-accent); }
     }
 
     /* ── Landing nav ── */
@@ -191,7 +260,7 @@ _DESIGN_TOKENS = """
         content: '';
         position: absolute; bottom: -2px; left: 0; right: 0;
         height: 1px;
-        background: var(--qm-accent);
+        background: var(--chart-1);
         transform: scaleX(0);
         transition: transform 0.25s var(--qm-spring);
         transform-origin: center;
@@ -225,9 +294,9 @@ _DESIGN_TOKENS = """
         display: inline-flex; align-items: center; gap: 6px;
         font-size: 0.68rem; font-weight: 550;
         letter-spacing: 1.2px; text-transform: uppercase;
-        color: var(--qm-accent-bright);
-        background: linear-gradient(135deg, rgba(157,163,173,0.1) 0%, rgba(157,163,173,0.04) 100%);
-        border: 0.5px solid rgba(157, 163, 173, 0.12);
+        color: var(--chart-1);
+        background: linear-gradient(135deg, rgba(0,122,255,0.1) 0%, rgba(94,92,230,0.06) 100%);
+        border: 0.5px solid rgba(0, 122, 255, 0.15);
         padding: 6px 16px;
         border-radius: 24px;
         margin-bottom: 2rem;
@@ -238,7 +307,7 @@ _DESIGN_TOKENS = """
         content: '';
         width: 5px; height: 5px;
         border-radius: 50%;
-        background: var(--qm-accent-bright);
+        background: var(--chart-1);
         animation: dotPulse 2s ease infinite;
     }
     .qm-landing-hero h1 {
@@ -250,11 +319,11 @@ _DESIGN_TOKENS = """
     .qm-landing-hero h1 .gradient-text {
         background: linear-gradient(
             135deg,
-            #f0f0f3 0%,
-            #b8bcc5 30%,
-            #7a7e86 60%,
-            #b8bcc5 80%,
-            #f0f0f3 100%
+            #e8e8ea 0%,
+            #007aff 25%,
+            #5e5ce6 50%,
+            #007aff 75%,
+            #e8e8ea 100%
         );
         background-size: 300% auto;
         -webkit-background-clip: text;
@@ -300,7 +369,7 @@ _DESIGN_TOKENS = """
         content: '';
         position: absolute; top: 0; left: 0; right: 0;
         height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(157,163,173,0.1), transparent);
+        background: linear-gradient(90deg, transparent, rgba(0,122,255,0.15), transparent);
         opacity: 0;
         transition: opacity 0.4s ease;
     }
@@ -308,7 +377,7 @@ _DESIGN_TOKENS = """
         content: '';
         position: absolute; inset: 0;
         border-radius: var(--qm-radius-lg);
-        background: radial-gradient(ellipse at 50% 0%, rgba(157,163,173,0.04) 0%, transparent 60%);
+        background: radial-gradient(ellipse at 50% 0%, rgba(0,122,255,0.04) 0%, transparent 60%);
         opacity: 0;
         transition: opacity 0.4s ease;
         pointer-events: none;
@@ -320,9 +389,9 @@ _DESIGN_TOKENS = """
     .qm-feature-card:nth-child(5) { animation-delay: 0.42s; }
     .qm-feature-card:nth-child(6) { animation-delay: 0.5s; }
     .qm-feature-card:hover {
-        border-color: rgba(157,163,173,0.12);
+        border-color: rgba(0,122,255,0.15);
         transform: translateY(-4px) scale(1.02);
-        box-shadow: var(--qm-shadow-lg), 0 0 0 1px rgba(157,163,173,0.04);
+        box-shadow: var(--qm-shadow-lg), 0 0 20px var(--glow-primary);
     }
     .qm-feature-card:hover::before,
     .qm-feature-card:hover::after { opacity: 1; }
@@ -428,10 +497,10 @@ _DESIGN_TOKENS = """
     .qm-security-item .dot {
         width: 6px; height: 6px;
         border-radius: 50%;
-        background: var(--qm-accent-bright);
+        background: var(--chart-1);
         margin-top: 7px;
         flex-shrink: 0;
-        box-shadow: 0 0 8px rgba(157, 163, 173, 0.4);
+        box-shadow: 0 0 8px var(--glow-primary);
         animation: dotPulse 3s ease infinite;
     }
     .qm-security-item:nth-child(2) .dot { animation-delay: 0.5s; }
@@ -463,7 +532,7 @@ _DESIGN_TOKENS = """
         position: absolute; top: 0; left: 50%;
         transform: translateX(-50%);
         width: 200px; height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(157,163,173,0.15), transparent);
+        background: linear-gradient(90deg, transparent, rgba(0,122,255,0.2), transparent);
     }
     .qm-footer p {
         font-size: 0.76rem;
@@ -479,7 +548,7 @@ _DESIGN_TOKENS = """
     .qm-footer a::after {
         content: '';
         position: absolute; bottom: -1px; left: 0; right: 0;
-        height: 0.5px; background: var(--qm-accent);
+        height: 0.5px; background: var(--chart-1);
         transform: scaleX(0);
         transition: transform 0.25s var(--qm-spring);
     }
@@ -575,7 +644,7 @@ _DESIGN_TOKENS = """
         border-color: rgba(255, 255, 255, 0.12) !important;
         box-shadow: var(--qm-shadow-md),
                     inset 0 1px 0 rgba(255,255,255,0.07),
-                    0 0 20px rgba(157, 163, 173, 0.05) !important;
+                    0 0 20px var(--glow-primary) !important;
         transform: translateY(-1px) !important;
     }
     .stButton > button[kind="primary"]:active,
@@ -806,7 +875,7 @@ _DESIGN_TOKENS = """
         overflow: hidden;
     }
     .stProgress > div > div > div {
-        background: linear-gradient(90deg, var(--qm-accent), var(--qm-accent-bright), var(--qm-accent)) !important;
+        background: linear-gradient(90deg, var(--chart-1), var(--chart-2), var(--chart-1)) !important;
         background-size: 200% auto !important;
         animation: shimmer 2s linear infinite !important;
         border-radius: 6px !important;
