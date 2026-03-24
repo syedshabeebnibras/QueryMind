@@ -1,9 +1,14 @@
 """QueryMind Streamlit UI — NL-to-SQL with feedback and history."""
 
 import asyncio
+import uuid
 
 import pandas as pd
 import streamlit as st
+
+# Generate a persistent user ID per browser session
+if "user_id" not in st.session_state:
+    st.session_state["user_id"] = str(uuid.uuid4())
 
 from api_client import (
     create_connection,
@@ -86,7 +91,7 @@ with st.sidebar:
     status_filter = st.selectbox("Filter by status", [None, "success", "error", "blocked"])
     if st.button("Load History"):
         try:
-            history = asyncio.run(get_history(status=status_filter))
+            history = asyncio.run(get_history(status=status_filter, user_id=st.session_state["user_id"]))
             for item in history["items"]:
                 with st.expander(f"{item['nl_query'][:60]}... ({item['status']})"):
                     st.text(f"ID: {item['id']}")
@@ -254,6 +259,7 @@ if run_button and nl_query.strip():
             result = asyncio.run(
                 run_query(
                     nl_query.strip(),
+                    user_id=st.session_state["user_id"],
                     connection_id=conn_id,
                 )
             )

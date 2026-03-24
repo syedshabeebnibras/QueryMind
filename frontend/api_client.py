@@ -84,13 +84,15 @@ async def setup_schema(
 
 
 async def get_history(
-    page: int = 1, page_size: int = 20, status: str | None = None
+    page: int = 1, page_size: int = 20, status: str | None = None, user_id: str | None = None
 ) -> dict[str, Any]:
     """GET /history — paginated query history."""
     async with httpx.AsyncClient(timeout=30) as client:
         params: dict[str, Any] = {"page": page, "page_size": page_size}
         if status:
             params["status"] = status
+        if user_id:
+            params["user_id"] = user_id
         resp = await client.get(f"{BACKEND_URL}/history", params=params)
         resp.raise_for_status()
         return resp.json()
