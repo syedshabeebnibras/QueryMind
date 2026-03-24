@@ -19,33 +19,54 @@ PostgreSQL SELECT query that answers it. Follow these rules strictly:
 3. Always include a LIMIT clause unless the query is a simple aggregate (COUNT, SUM, AVG, etc.).
 4. Use proper PostgreSQL syntax.
 5. Return ONLY the SQL query, no explanation or markdown.
+6. Return ALL relevant columns in the output, not just IDs. Include computed metrics,
+   descriptive columns (department, name, title, etc.), and any columns that provide context.
 
 SQL best practices you MUST follow for accurate results:
 
+WINDOW FUNCTIONS:
 - For comparing rows within the same table (e.g., consecutive events, repeated transactions,
   time-based patterns), ALWAYS use window functions (LAG, LEAD, ROW_NUMBER, RANK) with
-  PARTITION BY and ORDER BY instead of self-joins. Self-joins double-count pairs and produce
-  wrong results.
-- For "consecutive days/periods" questions, use LAG() or ROW_NUMBER() with date arithmetic
-  to detect gaps, not self-joins or cross joins.
-- For "within N minutes" or time-window comparisons, use LAG() OVER (PARTITION BY ... ORDER BY timestamp)
-  to compare each row only to its immediate predecessor, avoiding double-counting.
-- When counting duplicates or repeated events, count only the later occurrence in each pair,
-  not both sides.
-- Always CAST text/string columns to the appropriate type (TIMESTAMP, DATE, NUMERIC) before
-  doing arithmetic or comparisons on them.
-- Prefer CTEs (WITH ... AS) for multi-step logic to keep queries readable and correct.
-- For splitting data into halves, use ROW_NUMBER() with FLOOR(count / 2.0) as the boundary.
-  First half = rows where rn <= FLOOR(total / 2.0), second half = the rest.
-  This ensures that when the count is odd, the extra row goes to the SECOND half.
-  NEVER use CEIL for the first-half boundary — that incorrectly puts the extra row in the first half.
-- For finding the most common value (mode), use COUNT + RANK or ROW_NUMBER with ORDER BY count DESC.
+  PARTITION BY and ORDER BY instead of self-joins.
+- For "growth from previous row" or "change from prior value", ALWAYS use LAG() (looks backward),
+  NOT LEAD() (looks forward). LAG(col) OVER (PARTITION BY id ORDER BY date) gives the PREVIOUS
+  row's value. growth_pct = ((current - LAG(current)) / LAG(current)) * 100.
+- For "consecutive days/periods" questions, use LAG() or ROW_NUMBER() with date arithmetic.
+- For "within N minutes" or time-window comparisons, use LAG() to compare each row to its
+  immediate predecessor.
+
+HALF-SPLITTING PATTERN (use this exact CTE structure):
+  CTE 1 (base): Compute ROW_NUMBER() and COUNT(*) OVER (PARTITION BY id) as total_records,
+    plus LAG() for previous values. Keep ALL original columns.
+  CTE 2 (growth_rows): Filter WHERE prev_value IS NOT NULL, compute growth_pct.
+    Keep rn and total_records from the base CTE.
+  CTE 3 (split): Assign half using the ORIGINAL row number (rn from base CTE):
+    CASE WHEN rn <= FLOOR(total_records / 2.0) THEN 'first_half' ELSE 'second_half' END
+    ALWAYS use FLOOR — this puts the extra row in the second half when count is odd.
+    NEVER use CEIL for the first-half boundary.
+  CTE 4 (aggregate): GROUP BY id, compute AVG for each half using:
+    AVG(CASE WHEN half = 'first_half' THEN metric END) AS first_half_avg
+    AVG(CASE WHEN half = 'second_half' THEN metric END) AS second_half_avg
+  Final SELECT: JOIN with any additional filter CTEs, apply WHERE conditions.
+
+LATEST ROW PATTERN:
+- To get the latest/most recent row per group, use ROW_NUMBER() OVER (PARTITION BY id
+  ORDER BY date DESC) AS latest_rn, then filter WHERE latest_rn = 1 in the next CTE.
+  NEVER use correlated subqueries with MAX(date) — they are slower and error-prone.
+
+RECORD COUNT FILTERING:
+- When the question says "at least N records", ALWAYS enforce this with a separate CTE or
+  in the final WHERE clause. Use COUNT(*) OVER or a dedicated count CTE.
+
+COLUMN ALIAS RULE:
 - CRITICAL PostgreSQL rule: You CANNOT reference a column alias from SELECT in WHERE or HAVING
-  of the SAME query level. Either wrap it in a CTE/subquery and filter in the outer query,
-  or repeat the expression. Example: instead of `SELECT count(*) AS cnt FROM t WHERE cnt > 5`,
-  use `WITH cte AS (SELECT count(*) AS cnt FROM t) SELECT * FROM cte WHERE cnt > 5`.
-- When building multi-step queries, compute aggregates in one CTE, then filter/transform in
-  the next CTE or outer query. Never mix computation and filtering in the same SELECT level.
+  of the SAME query level. Wrap in a CTE/subquery and filter in the outer query.
+
+GENERAL:
+- Always CAST text/string columns to the appropriate type before arithmetic.
+- Prefer CTEs (WITH ... AS) for multi-step logic — one computation per CTE.
+- For finding the most common value (mode), use COUNT + ROW_NUMBER with ORDER BY count DESC.
+- When counting duplicates, count only the later occurrence, not both sides.
 
 """
 
