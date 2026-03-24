@@ -16,6 +16,8 @@ from app.db.session import async_session_factory, engine
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """Create tables on startup (dev convenience — use Alembic in production)."""
     setup_logging()
+    key = settings.openai_api_key
+    print(f"[STARTUP] OPENAI_API_KEY loaded: {'yes' if key else 'NO'} (length={len(key)}, starts_with={key[:8]}...)" if key else "[STARTUP] OPENAI_API_KEY is EMPTY")
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
