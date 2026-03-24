@@ -904,6 +904,180 @@ _DESIGN_TOKENS = """
         font-family: var(--qm-font) !important;
     }
 
+    /* ── Workspace-specific panels ── */
+    .qm-ws-topbar {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 0.75rem 0 1.5rem 0;
+        animation: fadeSlideDown 0.45s var(--qm-spring-soft) both;
+        border-bottom: 0.5px solid var(--border);
+        margin-bottom: 1.5rem;
+    }
+    .qm-ws-topbar .brand {
+        display: flex; align-items: center; gap: 12px;
+        text-decoration: none;
+    }
+    .qm-ws-topbar .logo-mark {
+        width: 36px; height: 36px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--chart-1), var(--chart-2));
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 2px 8px var(--glow-primary), inset 0 1px 0 rgba(255,255,255,0.15);
+        transition: all 0.3s var(--qm-spring);
+        position: relative;
+        overflow: hidden;
+    }
+    .qm-ws-topbar .logo-mark::before {
+        content: '';
+        position: absolute; inset: 0;
+        background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 50%);
+        pointer-events: none;
+    }
+    .qm-ws-topbar .logo-mark:hover {
+        transform: scale(1.08) rotate(-2deg);
+        box-shadow: 0 4px 16px var(--glow-primary), 0 0 24px var(--glow-accent);
+    }
+    .qm-ws-topbar .logo-mark svg {
+        width: 18px; height: 18px;
+        fill: none; stroke: #fff; stroke-width: 2;
+        stroke-linecap: round; stroke-linejoin: round;
+        position: relative; z-index: 1;
+    }
+    .qm-ws-topbar .brand-text {
+        font-size: 1rem; font-weight: 650;
+        color: var(--foreground);
+        letter-spacing: -0.4px;
+    }
+    .qm-ws-topbar .brand-sub {
+        font-size: 0.7rem; font-weight: 450;
+        color: var(--qm-text-tertiary);
+        letter-spacing: 0.3px;
+        margin-left: 8px;
+    }
+
+    /* ── Workspace query card ── */
+    .qm-query-card {
+        background: var(--card);
+        border: 0.5px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        animation: fadeSlideUp 0.45s var(--qm-spring-soft) both;
+        position: relative;
+        overflow: hidden;
+    }
+    .qm-query-card::before {
+        content: '';
+        position: absolute; top: 0; left: 0; right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(0,122,255,0.12), transparent);
+    }
+    .qm-query-card .card-label {
+        font-size: 0.62rem; font-weight: 650;
+        letter-spacing: 1.5px; text-transform: uppercase;
+        color: var(--chart-1);
+        margin-bottom: 0.75rem;
+        display: flex; align-items: center; gap: 6px;
+    }
+    .qm-query-card .card-label::before {
+        content: '';
+        width: 4px; height: 4px;
+        border-radius: 50%;
+        background: var(--chart-1);
+        box-shadow: 0 0 6px var(--glow-primary);
+    }
+
+    /* ── Result panel ── */
+    .qm-result-panel {
+        background: linear-gradient(180deg, var(--card) 0%, rgba(22,22,26,0.6) 100%);
+        border: 0.5px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        margin: 1rem 0;
+        animation: scaleIn 0.4s var(--qm-spring-soft) both;
+        position: relative;
+    }
+    .qm-result-panel::before {
+        content: '';
+        position: absolute; top: 0; left: 0; right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--chart-1), var(--chart-2), var(--chart-3));
+        border-radius: var(--radius) var(--radius) 0 0;
+        opacity: 0.6;
+    }
+
+    /* ── Metrics cards ── */
+    .qm-metrics-row {
+        display: flex; gap: 0.75rem;
+        margin: 1rem 0;
+        animation: fadeSlideUp 0.4s 0.15s var(--qm-spring-soft) both;
+    }
+    .qm-metric-card {
+        flex: 1;
+        background: var(--surface-elevated);
+        border: 0.5px solid var(--border);
+        border-radius: var(--radius);
+        padding: 0.85rem 1rem;
+        text-align: center;
+        transition: all 0.25s var(--qm-spring-soft);
+    }
+    .qm-metric-card:hover {
+        border-color: var(--qm-border-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .qm-metric-card .metric-val {
+        font-family: var(--qm-font);
+        font-size: 1.1rem; font-weight: 650;
+        color: var(--foreground);
+        letter-spacing: -0.5px;
+    }
+    .qm-metric-card .metric-label {
+        font-family: var(--qm-font);
+        font-size: 0.62rem; font-weight: 550;
+        letter-spacing: 1px; text-transform: uppercase;
+        color: var(--qm-text-tertiary);
+        margin-top: 2px;
+    }
+    .qm-metric-card:nth-child(1) .metric-val { color: var(--chart-1); }
+    .qm-metric-card:nth-child(2) .metric-val { color: var(--chart-3); }
+    .qm-metric-card:nth-child(3) .metric-val { color: var(--chart-2); }
+    .qm-metric-card:nth-child(4) .metric-val { color: var(--chart-4); }
+
+    /* ── Feedback buttons ── */
+    .qm-feedback-good:hover { border-color: rgba(48, 209, 88, 0.2) !important; }
+    .qm-feedback-bad:hover { border-color: rgba(255, 59, 48, 0.2) !important; }
+
+    /* ── Sidebar logo ── */
+    .qm-sidebar-logo {
+        display: flex; align-items: center; gap: 10px;
+        padding: 0.25rem 0 0.75rem 0;
+        animation: fadeIn 0.4s var(--qm-spring-soft) both;
+    }
+    .qm-sidebar-logo .logo-mark {
+        width: 28px; height: 28px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, var(--chart-1), var(--chart-2));
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 1px 4px var(--glow-primary);
+        position: relative; overflow: hidden;
+    }
+    .qm-sidebar-logo .logo-mark::before {
+        content: '';
+        position: absolute; inset: 0;
+        background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 50%);
+    }
+    .qm-sidebar-logo .logo-mark svg {
+        width: 14px; height: 14px;
+        fill: none; stroke: #fff; stroke-width: 2.2;
+        stroke-linecap: round; stroke-linejoin: round;
+        position: relative; z-index: 1;
+    }
+    .qm-sidebar-logo .logo-text {
+        font-size: 0.82rem; font-weight: 620;
+        color: var(--foreground);
+        letter-spacing: -0.3px;
+    }
+
     /* ── Dividers ── */
     hr {
         border: none;
@@ -942,7 +1116,13 @@ def _render_landing():
     st.markdown("""
     <div class="qm-landing-nav">
         <div class="brand">
-            <div class="brand-icon">Q</div>
+            <div class="brand-icon" style="background: linear-gradient(135deg, var(--chart-1), var(--chart-2)); position: relative; overflow: hidden;">
+                <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,0.15) 0%,transparent 50%);pointer-events:none;"></div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="position:relative;z-index:1">
+                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+                    <path d="M8 11h6"/><path d="M11 8v6"/>
+                </svg>
+            </div>
             <span class="brand-text">QueryMind</span>
         </div>
         <div class="nav-links">
@@ -1108,14 +1288,19 @@ def _render_landing():
 def _render_workspace():
     """Render the functional query workspace."""
 
+    # SVG logo icon (search + plus = query creation)
+    _LOGO_SVG = '''<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6"/><path d="M11 8v6"/></svg>'''
+    _LOGO_SVG_SM = '''<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6"/><path d="M11 8v6"/></svg>'''
+
     # ── Workspace header ──
     hdr_left, hdr_right = st.columns([3, 1])
     with hdr_left:
-        st.markdown("""
-        <div class="qm-ws-header">
+        st.markdown(f"""
+        <div class="qm-ws-topbar">
             <div class="brand">
-                <div class="brand-icon">Q</div>
+                <div class="logo-mark">{_LOGO_SVG}</div>
                 <span class="brand-text">QueryMind</span>
+                <span class="brand-sub">Workspace</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -1127,6 +1312,14 @@ def _render_workspace():
 
     # ── Sidebar ──
     with st.sidebar:
+        # Logo
+        st.markdown(f"""
+        <div class="qm-sidebar-logo">
+            <div class="logo-mark">{_LOGO_SVG_SM}</div>
+            <span class="logo-text">QueryMind</span>
+        </div>
+        """, unsafe_allow_html=True)
+
         # Status
         try:
             health = asyncio.run(health_check())
@@ -1266,7 +1459,12 @@ def _render_workspace():
             except Exception as e:
                 st.error(str(e))
 
-    # ── Query input ──
+    # ── Query input (card) ──
+    st.markdown("""
+    <div class="qm-query-card">
+        <div class="card-label">Ask a question</div>
+    </div>
+    """, unsafe_allow_html=True)
     nl_query = st.text_area(
         "What would you like to know?",
         placeholder="e.g., Show the top 10 customers by total spend last quarter",
@@ -1420,20 +1618,33 @@ INSERT INTO widgets VALUES ('2019-12-01', 'A', 30);""",
     if result and result["status"] == "success":
         st.markdown("---")
 
-        st.markdown('<div class="qm-label">Generated SQL</div>', unsafe_allow_html=True)
+        # Result panel with gradient top border
+        st.markdown('<div class="qm-result-panel"><div class="qm-label">Generated SQL</div></div>', unsafe_allow_html=True)
         st.code(result["final_sql"], language="sql")
 
-        # Metrics
-        m_parts = []
-        m_parts.append(f'<span class="val">{result["runtime_ms"]:.0f}ms</span> runtime')
-        m_parts.append(f'<span class="val">{result["row_count"]}</span> rows')
+        # Metric cards
+        metric_cards = f"""
+        <div class="qm-metrics-row">
+            <div class="qm-metric-card">
+                <div class="metric-val">{result["runtime_ms"]:.0f}ms</div>
+                <div class="metric-label">Runtime</div>
+            </div>
+            <div class="qm-metric-card">
+                <div class="metric-val">{result["row_count"]}</div>
+                <div class="metric-label">Rows</div>
+            </div>"""
         if result.get("explain_summary"):
-            m_parts.append(f'cost <span class="val">{result["explain_summary"]["total_cost"]:.0f}</span>')
-            m_parts.append(f'est. <span class="val">{result["explain_summary"]["estimated_rows"]:,}</span> rows')
-        st.markdown(
-            '<div class="qm-metrics-strip">' + " &middot; ".join(m_parts) + "</div>",
-            unsafe_allow_html=True,
-        )
+            metric_cards += f"""
+            <div class="qm-metric-card">
+                <div class="metric-val">{result["explain_summary"]["total_cost"]:.0f}</div>
+                <div class="metric-label">Cost</div>
+            </div>
+            <div class="qm-metric-card">
+                <div class="metric-val">{result["explain_summary"]["estimated_rows"]:,}</div>
+                <div class="metric-label">Est. Rows</div>
+            </div>"""
+        metric_cards += "</div>"
+        st.markdown(metric_cards, unsafe_allow_html=True)
 
         if result["rows"]:
             df = pd.DataFrame(result["rows"], columns=result["columns"])
