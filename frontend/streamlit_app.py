@@ -1,4 +1,4 @@
-"""QueryMind Streamlit UI — Clean, minimal NL-to-SQL interface."""
+"""QueryMind — Premium NL-to-SQL interface."""
 
 import asyncio
 import uuid
@@ -6,11 +6,9 @@ import uuid
 import pandas as pd
 import streamlit as st
 
-# Persistent user ID — stable across sessions via query param or default
-# Users can bookmark ?user=myname to keep their identity (and feedback history)
+# Persistent user ID — stable across sessions via query param
 _user_param = st.query_params.get("user")
 if _user_param:
-    # Deterministic UUID from the username so it's always the same
     stable_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, _user_param))
     st.session_state["user_id"] = stable_id
 elif "user_id" not in st.session_state:
@@ -32,158 +30,476 @@ from api_client import (
 
 st.set_page_config(page_title="QueryMind", page_icon="Q", layout="centered")
 
-# --- Custom CSS for a clean, modern look ---
+# ──────────────────────────────────────────────────────────────
+# Premium Design System — "Syntactic Slate"
+# ──────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-    /* Hide default Streamlit branding */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
+    /* ── Import premium font ── */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-    /* Overall spacing */
+    /* ── Hide Streamlit chrome ── */
+    #MainMenu, footer, header { visibility: hidden; }
+    .stDeployButton { display: none; }
+
+    /* ── Global foundation ── */
+    html, body, [data-testid="stAppViewContainer"] {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    [data-testid="stAppViewContainer"] {
+        background: #121214;
+    }
+
     .block-container {
-        padding-top: 2rem;
-        padding-bottom: 2rem;
-        max-width: 800px;
+        padding-top: 3rem;
+        padding-bottom: 4rem;
+        max-width: 780px;
     }
 
-    /* Brand header */
-    .qm-header {
+    /* ── Entrance animations ── */
+    @keyframes fadeSlideUp {
+        from { opacity: 0; transform: translateY(16px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes subtleGlow {
+        0%, 100% { box-shadow: 0 0 20px rgba(138, 143, 152, 0.03); }
+        50% { box-shadow: 0 0 30px rgba(138, 143, 152, 0.06); }
+    }
+
+    .block-container > div {
+        animation: fadeSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    /* ── Hero / Brand ── */
+    .qm-hero {
         text-align: center;
-        padding: 1.5rem 0 0.5rem 0;
+        padding: 2.5rem 0 2rem 0;
+        animation: fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
-    .qm-header h1 {
-        font-size: 2rem;
-        font-weight: 700;
-        letter-spacing: -0.5px;
-        margin-bottom: 0.25rem;
-        color: var(--text-color);
-    }
-    .qm-header p {
-        font-size: 0.95rem;
-        opacity: 0.55;
-        margin: 0;
-    }
-
-    /* Card style container */
-    .qm-card {
-        border: 1px solid rgba(128,128,128,0.15);
+    .qm-logo {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
         border-radius: 12px;
-        padding: 1.5rem;
+        background: linear-gradient(135deg, #2a2a2e 0%, #1c1c1f 100%);
+        border: 0.5px solid rgba(228, 228, 231, 0.08);
         margin-bottom: 1.25rem;
-        background: var(--secondary-background-color);
-    }
-
-    /* Result SQL block */
-    .qm-sql-label {
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        opacity: 0.5;
-        margin-bottom: 0.25rem;
+        font-size: 1.1rem;
         font-weight: 600;
+        color: #8a8f98;
+        letter-spacing: -0.5px;
+        box-shadow:
+            0 1px 3px rgba(0,0,0,0.3),
+            inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+    .qm-hero h1 {
+        font-size: 1.85rem;
+        font-weight: 700;
+        letter-spacing: -0.8px;
+        color: #e4e4e7;
+        margin: 0 0 0.4rem 0;
+        line-height: 1.15;
+    }
+    .qm-hero p {
+        font-size: 0.88rem;
+        font-weight: 400;
+        color: rgba(228, 228, 231, 0.38);
+        margin: 0;
+        letter-spacing: 0.2px;
     }
 
-    /* Metrics row */
-    .qm-metrics {
-        display: flex;
-        gap: 1.5rem;
-        margin: 0.75rem 0;
-    }
-    .qm-metric {
-        font-size: 0.8rem;
-        opacity: 0.6;
-    }
-    .qm-metric strong {
-        opacity: 1;
-        color: var(--text-color);
-    }
-
-    /* Subtle divider */
+    /* ── Subtle dividers ── */
     hr {
         border: none;
-        border-top: 1px solid rgba(128,128,128,0.1);
-        margin: 1.5rem 0;
+        border-top: 0.5px solid rgba(228, 228, 231, 0.06);
+        margin: 1.75rem 0;
     }
 
-    /* Status pill in sidebar */
-    .qm-status {
+    /* ── Input surfaces ── */
+    .stTextArea textarea,
+    .stTextInput input {
+        background: #1c1c1f !important;
+        border: 0.5px solid rgba(228, 228, 231, 0.08) !important;
+        border-radius: 10px !important;
+        color: #e4e4e7 !important;
+        font-family: 'Inter', -apple-system, sans-serif !important;
+        font-size: 0.9rem !important;
+        padding: 0.85rem 1rem !important;
+        transition: border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                    box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        caret-color: #8a8f98 !important;
+    }
+    .stTextArea textarea:focus,
+    .stTextInput input:focus {
+        border-color: rgba(138, 143, 152, 0.3) !important;
+        box-shadow: 0 0 0 3px rgba(138, 143, 152, 0.06),
+                    0 1px 2px rgba(0,0,0,0.2) !important;
+        outline: none !important;
+    }
+    .stTextArea textarea::placeholder,
+    .stTextInput input::placeholder {
+        color: rgba(228, 228, 231, 0.2) !important;
+        font-weight: 400 !important;
+    }
+
+    /* ── Primary button — luxe tactile ── */
+    .stButton > button[kind="primary"],
+    .stButton > button[data-testid="stBaseButton-primary"] {
+        background: linear-gradient(180deg, #2a2a2e 0%, #232326 100%) !important;
+        border: 0.5px solid rgba(228, 228, 231, 0.1) !important;
+        border-radius: 10px !important;
+        color: #e4e4e7 !important;
+        font-family: 'Inter', -apple-system, sans-serif !important;
+        font-weight: 500 !important;
+        font-size: 0.88rem !important;
+        letter-spacing: 0.1px !important;
+        padding: 0.65rem 1.5rem !important;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        box-shadow:
+            0 1px 2px rgba(0,0,0,0.25),
+            inset 0 1px 0 rgba(255,255,255,0.04) !important;
+    }
+    .stButton > button[kind="primary"]:hover,
+    .stButton > button[data-testid="stBaseButton-primary"]:hover {
+        background: linear-gradient(180deg, #303034 0%, #28282c 100%) !important;
+        border-color: rgba(228, 228, 231, 0.15) !important;
+        box-shadow:
+            0 2px 8px rgba(0,0,0,0.3),
+            inset 0 1px 0 rgba(255,255,255,0.05) !important;
+        transform: translateY(-0.5px) !important;
+    }
+    .stButton > button[kind="primary"]:active,
+    .stButton > button[data-testid="stBaseButton-primary"]:active {
+        transform: scale(0.975) translateY(0) !important;
+        box-shadow: 0 0 0 rgba(0,0,0,0.2) !important;
+    }
+
+    /* ── Secondary / default buttons ── */
+    .stButton > button[kind="secondary"],
+    .stButton > button[data-testid="stBaseButton-secondary"],
+    .stButton > button:not([kind]) {
+        background: transparent !important;
+        border: 0.5px solid rgba(228, 228, 231, 0.08) !important;
+        border-radius: 10px !important;
+        color: rgba(228, 228, 231, 0.6) !important;
+        font-family: 'Inter', -apple-system, sans-serif !important;
+        font-weight: 500 !important;
+        font-size: 0.82rem !important;
+        padding: 0.55rem 1.25rem !important;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    .stButton > button[kind="secondary"]:hover,
+    .stButton > button[data-testid="stBaseButton-secondary"]:hover,
+    .stButton > button:not([kind]):hover {
+        background: rgba(228, 228, 231, 0.03) !important;
+        border-color: rgba(228, 228, 231, 0.12) !important;
+        color: #e4e4e7 !important;
+    }
+    .stButton > button[kind="secondary"]:active,
+    .stButton > button[data-testid="stBaseButton-secondary"]:active,
+    .stButton > button:not([kind]):active {
+        transform: scale(0.97) !important;
+    }
+
+    /* ── Expander — glass panel ── */
+    .streamlit-expanderHeader {
+        background: rgba(28, 28, 31, 0.6) !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        border: 0.5px solid rgba(228, 228, 231, 0.06) !important;
+        border-radius: 10px !important;
+        font-family: 'Inter', -apple-system, sans-serif !important;
+        font-size: 0.82rem !important;
+        font-weight: 500 !important;
+        color: rgba(228, 228, 231, 0.55) !important;
+        letter-spacing: 0.2px !important;
+        padding: 0.7rem 1rem !important;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    .streamlit-expanderHeader:hover {
+        border-color: rgba(228, 228, 231, 0.1) !important;
+        color: rgba(228, 228, 231, 0.75) !important;
+        background: rgba(28, 28, 31, 0.8) !important;
+    }
+    [data-testid="stExpander"] {
+        border: 0.5px solid rgba(228, 228, 231, 0.04) !important;
+        border-radius: 10px !important;
+        overflow: hidden;
+    }
+    [data-testid="stExpander"] details {
+        border: none !important;
+    }
+
+    /* ── Code blocks — refined ── */
+    .stCodeBlock, pre, code {
+        border-radius: 10px !important;
+    }
+    [data-testid="stCodeBlock"] {
+        border: 0.5px solid rgba(228, 228, 231, 0.05) !important;
+        border-radius: 10px !important;
+        overflow: hidden;
+    }
+
+    /* ── Dataframe — premium table ── */
+    [data-testid="stDataFrame"] {
+        border: 0.5px solid rgba(228, 228, 231, 0.06) !important;
+        border-radius: 10px !important;
+        overflow: hidden;
+        animation: fadeSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    /* ── Sidebar — glass panel ── */
+    [data-testid="stSidebar"] {
+        background: rgba(18, 18, 20, 0.85) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border-right: 0.5px solid rgba(228, 228, 231, 0.05) !important;
+    }
+    [data-testid="stSidebar"] .block-container {
+        padding-top: 1.5rem;
+    }
+
+    /* ── Status pill ── */
+    .qm-status-pill {
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        font-size: 0.8rem;
-        padding: 4px 10px;
+        font-family: 'Inter', -apple-system, sans-serif;
+        font-size: 0.72rem;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        padding: 5px 12px;
         border-radius: 20px;
-        background: rgba(76, 175, 80, 0.1);
-        color: #4caf50;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .qm-status-pill.online {
+        background: rgba(74, 222, 128, 0.08);
+        color: rgba(74, 222, 128, 0.7);
+        border: 0.5px solid rgba(74, 222, 128, 0.1);
+    }
+    .qm-status-pill.offline {
+        background: rgba(248, 113, 113, 0.08);
+        color: rgba(248, 113, 113, 0.7);
+        border: 0.5px solid rgba(248, 113, 113, 0.1);
+    }
+
+    /* ── Sidebar section labels ── */
+    .qm-section-label {
+        font-family: 'Inter', -apple-system, sans-serif;
+        font-size: 0.65rem;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: rgba(228, 228, 231, 0.25);
+        margin: 1rem 0 0.5rem 0;
+    }
+
+    /* ── Table list items in sidebar ── */
+    .qm-table-item {
+        font-family: 'Inter', -apple-system, sans-serif;
+        font-size: 0.8rem;
+        color: rgba(228, 228, 231, 0.55);
+        padding: 4px 0;
+        transition: color 0.2s ease;
+    }
+    .qm-table-item code {
+        font-size: 0.78rem;
+        color: rgba(228, 228, 231, 0.7);
+        background: rgba(228, 228, 231, 0.04);
+        padding: 2px 6px;
+        border-radius: 4px;
+        border: 0.5px solid rgba(228, 228, 231, 0.06);
+    }
+    .qm-table-item .cols {
+        color: rgba(228, 228, 231, 0.25);
+        font-size: 0.72rem;
+        margin-left: 4px;
+    }
+
+    /* ── Result section labels ── */
+    .qm-label {
+        font-family: 'Inter', -apple-system, sans-serif;
+        font-size: 0.65rem;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: rgba(228, 228, 231, 0.25);
+        margin-bottom: 0.6rem;
+    }
+
+    /* ── Metrics strip ── */
+    .qm-metrics-strip {
+        display: flex;
+        gap: 1.25rem;
+        padding: 0.6rem 0;
+        font-family: 'Inter', -apple-system, sans-serif;
+        font-size: 0.78rem;
+        color: rgba(228, 228, 231, 0.3);
+        animation: fadeIn 0.5s 0.2s both;
+    }
+    .qm-metrics-strip .val {
+        color: rgba(228, 228, 231, 0.6);
         font-weight: 500;
     }
-    .qm-status.offline {
-        background: rgba(244, 67, 54, 0.1);
-        color: #f44336;
+
+    /* ── Result card ── */
+    .qm-result-card {
+        background: linear-gradient(180deg, rgba(28, 28, 31, 0.5) 0%, rgba(28, 28, 31, 0.3) 100%);
+        border: 0.5px solid rgba(228, 228, 231, 0.05);
+        border-radius: 14px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        animation: fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.15);
     }
 
-    /* Tighter textarea */
-    .stTextArea textarea {
-        border-radius: 8px !important;
+    /* ── Feedback buttons ── */
+    .qm-feedback-row {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
     }
 
-    /* Button styling */
-    .stButton > button[kind="primary"] {
-        border-radius: 8px;
+    /* ── Selectbox refinement ── */
+    [data-testid="stSelectbox"] > div > div {
+        background: #1c1c1f !important;
+        border: 0.5px solid rgba(228, 228, 231, 0.08) !important;
+        border-radius: 10px !important;
+    }
+
+    /* ── File uploader ── */
+    [data-testid="stFileUploader"] {
+        border: 0.5px dashed rgba(228, 228, 231, 0.08) !important;
+        border-radius: 10px !important;
+        transition: border-color 0.25s ease !important;
+    }
+    [data-testid="stFileUploader"]:hover {
+        border-color: rgba(228, 228, 231, 0.15) !important;
+    }
+
+    /* ── Spinner ── */
+    .stSpinner > div {
+        border-color: rgba(138, 143, 152, 0.3) !important;
+        border-top-color: #8a8f98 !important;
+    }
+
+    /* ── Alert boxes — refined ── */
+    [data-testid="stAlert"] {
+        border-radius: 10px !important;
+        border-width: 0.5px !important;
+        font-size: 0.85rem !important;
+    }
+
+    /* ── Progress bar ── */
+    .stProgress > div > div {
+        background: rgba(138, 143, 152, 0.15) !important;
+        border-radius: 4px !important;
+    }
+    .stProgress > div > div > div {
+        background: linear-gradient(90deg, #8a8f98, #6b6f77) !important;
+        border-radius: 4px !important;
+    }
+
+    /* ── Toast ── */
+    [data-testid="stToast"] {
+        backdrop-filter: blur(12px) !important;
+        border: 0.5px solid rgba(228, 228, 231, 0.06) !important;
+        border-radius: 10px !important;
+    }
+
+    /* ── Chart styling ── */
+    [data-testid="stVegaLiteChart"] {
+        border: 0.5px solid rgba(228, 228, 231, 0.04) !important;
+        border-radius: 10px !important;
+        overflow: hidden;
+        padding: 0.5rem;
+    }
+
+    /* ── Caption / small text refinement ── */
+    .stCaption, [data-testid="stCaption"] {
+        font-family: 'Inter', -apple-system, sans-serif !important;
+        letter-spacing: 0.1px !important;
+    }
+
+    /* ── User signed-in badge ── */
+    .qm-user-badge {
+        font-family: 'Inter', -apple-system, sans-serif;
+        font-size: 0.72rem;
+        font-weight: 500;
+        color: rgba(228, 228, 231, 0.35);
+        padding: 3px 0;
+        letter-spacing: 0.2px;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# --- Header ---
+# ──────────────────────────────────────────────────────────────
+# Hero
+# ──────────────────────────────────────────────────────────────
 st.markdown("""
-<div class="qm-header">
+<div class="qm-hero">
+    <div class="qm-logo">Q</div>
     <h1>QueryMind</h1>
     <p>Ask questions about your data in plain English</p>
 </div>
 """, unsafe_allow_html=True)
 
-# --- Sidebar: minimal status + connections + history ---
+# ──────────────────────────────────────────────────────────────
+# Sidebar
+# ──────────────────────────────────────────────────────────────
 with st.sidebar:
     # Status
     try:
         health = asyncio.run(health_check())
         if health["status"] == "ok":
             st.markdown(
-                '<div class="qm-status">Connected</div>',
+                '<div class="qm-status-pill online">Connected</div>',
                 unsafe_allow_html=True,
             )
         else:
             st.markdown(
-                f'<div class="qm-status offline">DB: {health["database"]}</div>',
+                f'<div class="qm-status-pill offline">DB: {health["database"]}</div>',
                 unsafe_allow_html=True,
             )
     except Exception:
         st.markdown(
-            '<div class="qm-status offline">Backend offline</div>',
+            '<div class="qm-status-pill offline">Offline</div>',
             unsafe_allow_html=True,
         )
 
-    # User identity — set a name to persist feedback across sessions
-    st.caption("USER")
+    # User identity
+    st.markdown('<div class="qm-section-label">Identity</div>', unsafe_allow_html=True)
     current_user = _user_param or ""
     new_user = st.text_input(
         "Username",
         value=current_user,
         key="username_input",
-        placeholder="Enter a name to keep your history",
+        placeholder="Enter your name",
         label_visibility="collapsed",
     )
     if new_user and new_user != current_user:
         st.query_params["user"] = new_user
         st.rerun()
     if current_user:
-        st.caption(f"Signed in as **{current_user}**")
+        st.markdown(
+            f'<div class="qm-user-badge">{current_user}</div>',
+            unsafe_allow_html=True,
+        )
 
     st.markdown("---")
 
-    # Connection selector
-    st.caption("CONNECTION")
+    # Connection
+    st.markdown('<div class="qm-section-label">Connection</div>', unsafe_allow_html=True)
     try:
         connections = asyncio.run(get_connections())
     except Exception:
@@ -201,10 +517,10 @@ with st.sidebar:
         selected_connection = connections[selected_idx]
     else:
         selected_connection = None
-        st.info("No connections. Add one below.")
+        st.caption("No connections yet")
 
-    with st.expander("Manage connections", expanded=False):
-        new_name = st.text_input("Name", key="new_conn_name", placeholder="my_database")
+    with st.expander("Manage", expanded=False):
+        new_name = st.text_input("Name", key="new_conn_name", placeholder="production_db")
         new_url = st.text_input("URL", key="new_conn_url", type="password", placeholder="postgresql://...")
         if st.button("Add", key="add_conn_btn", use_container_width=True):
             if new_name and new_url:
@@ -242,18 +558,21 @@ with st.sidebar:
         existing_tables = []
 
     if existing_tables:
-        st.caption(f"TABLES ({len(existing_tables)})")
+        st.markdown(
+            f'<div class="qm-section-label">Tables ({len(existing_tables)})</div>',
+            unsafe_allow_html=True,
+        )
         for t in existing_tables:
             st.markdown(
-                f"<span style='font-size:0.85rem'>`{t['table_name']}` "
-                f"<span style='opacity:0.5'>({t['column_count']} cols)</span></span>",
+                f'<div class="qm-table-item"><code>{t["table_name"]}</code>'
+                f'<span class="cols">{t["column_count"]} cols</span></div>',
                 unsafe_allow_html=True,
             )
 
     st.markdown("---")
 
     # History
-    st.caption("HISTORY")
+    st.markdown('<div class="qm-section-label">History</div>', unsafe_allow_html=True)
     status_filter = st.selectbox(
         "Filter",
         [None, "success", "error", "blocked"],
@@ -279,8 +598,9 @@ with st.sidebar:
             st.error(str(e))
 
 
-# --- Main: Unified input area ---
-# Query input
+# ──────────────────────────────────────────────────────────────
+# Main — Query Input
+# ──────────────────────────────────────────────────────────────
 nl_query = st.text_area(
     "What would you like to know?",
     placeholder="e.g., Show the top 10 customers by total spend last quarter",
@@ -288,7 +608,7 @@ nl_query = st.text_area(
     label_visibility="collapsed",
 )
 
-# Data input — paste table/SQL and file upload in a compact section
+# Data import — collapsible
 with st.expander("Import data", expanded=False):
     data_input = st.text_area(
         "Paste table data (CSV, TSV, markdown) or SQL (CREATE TABLE, INSERT):",
@@ -304,7 +624,6 @@ CREATE TABLE widgets (date DATE, type VARCHAR(10), count INTEGER);
 INSERT INTO widgets VALUES ('2019-12-01', 'A', 30);""",
     )
 
-    # Detect if input looks like SQL
     is_sql_input = False
     if data_input and data_input.strip():
         first_word = data_input.strip().split()[0].upper() if data_input.strip() else ""
@@ -355,7 +674,6 @@ INSERT INTO widgets VALUES ('2019-12-01', 'A', 30);""",
             else:
                 st.warning("Paste some data or SQL first.")
 
-    # File upload
     st.markdown("")
     uploaded_files = st.file_uploader(
         "Or upload files",
@@ -431,22 +749,28 @@ if st.button("Run Query", type="primary", use_container_width=True):
     else:
         st.warning("Enter a question first.")
 
-# --- Results ---
+# ──────────────────────────────────────────────────────────────
+# Results
+# ──────────────────────────────────────────────────────────────
 result = st.session_state.get("last_result")
 if result and result["status"] == "success":
     st.markdown("---")
 
     # SQL
-    st.markdown('<div class="qm-sql-label">Generated SQL</div>', unsafe_allow_html=True)
+    st.markdown('<div class="qm-label">Generated SQL</div>', unsafe_allow_html=True)
     st.code(result["final_sql"], language="sql")
 
-    # Metrics row
-    metrics_parts = [f"**{result['runtime_ms']:.0f}ms** runtime"]
-    metrics_parts.append(f"**{result['row_count']}** rows")
+    # Metrics
+    m_parts = []
+    m_parts.append(f'<span class="val">{result["runtime_ms"]:.0f}ms</span> runtime')
+    m_parts.append(f'<span class="val">{result["row_count"]}</span> rows')
     if result.get("explain_summary"):
-        metrics_parts.append(f"cost **{result['explain_summary']['total_cost']:.0f}**")
-        metrics_parts.append(f"est. **{result['explain_summary']['estimated_rows']:,}** rows")
-    st.caption(" &nbsp;|&nbsp; ".join(metrics_parts))
+        m_parts.append(f'cost <span class="val">{result["explain_summary"]["total_cost"]:.0f}</span>')
+        m_parts.append(f'est. <span class="val">{result["explain_summary"]["estimated_rows"]:,}</span> rows')
+    st.markdown(
+        '<div class="qm-metrics-strip">' + " &middot; ".join(m_parts) + "</div>",
+        unsafe_allow_html=True,
+    )
 
     # Data table
     if result["rows"]:
@@ -485,7 +809,7 @@ if result and result["status"] == "success":
                 st.caption(f"Attempt {i + 1}")
                 st.code(sql, language="sql")
 
-    # Feedback — compact inline
+    # Feedback
     st.markdown("")
     fc1, fc2, fc3 = st.columns([1, 1, 4])
     with fc1:
