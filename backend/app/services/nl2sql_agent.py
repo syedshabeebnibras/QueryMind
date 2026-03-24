@@ -1,12 +1,11 @@
-"""LangChain-based NL→SQL agent with few-shot memory injection.
+"""LangChain-based NL→SQL generation with few-shot memory injection.
 
-Uses create_sql_agent from langchain_community with a ChatOpenAI model.
-Few-shot examples are injected into the system prompt.
+Uses a direct ChatOpenAI call with schema context instead of a multi-step agent
+for faster, more predictable SQL generation.
 """
 
-from langchain_community.agent_toolkits import create_sql_agent
-from langchain_community.utilities import SQLDatabase
 from langchain_openai import ChatOpenAI
+from langchain_core.messages import SystemMessage, HumanMessage
 
 from app.core.config import settings
 from app.core.logging import log
@@ -36,6 +35,8 @@ SQL best practices you MUST follow for accurate results:
 - Always CAST text/string columns to the appropriate type (TIMESTAMP, DATE, NUMERIC) before
   doing arithmetic or comparisons on them.
 - Prefer CTEs (WITH ... AS) for multi-step logic to keep queries readable and correct.
+- For splitting data into halves, use ROW_NUMBER() and CEIL/FLOOR with COUNT().
+- For finding the most common value (mode), use COUNT + RANK or ROW_NUMBER with ORDER BY count DESC.
 
 """
 
@@ -65,7 +66,7 @@ async def generate_sql(
     target_database_url: str | None = None,
     schema_context: str | None = None,
 ) -> str:
-    """Generate SQL from natural language using the LangChain SQL agent."""
+    """Generate SQL from natural language using a direct LLM call."""
     few_shot_text = build_few_shot_prompt(few_shot_examples or [])
 
     schema_section = ""
@@ -75,34 +76,25 @@ async def generate_sql(
             f"{schema_context}\n\n"
         )
 
-    prefix = _SYSTEM_PREFIX + schema_section + few_shot_text
+    system_prompt = _SYSTEM_PREFIX + schema_section + few_shot_text
 
     llm = ChatOpenAI(
         model="gpt-4o",
         temperature=0,
         api_key=settings.openai_api_key,
-    )
-
-    db_url = target_database_url or settings.target_database_url
-    db = SQLDatabase.from_uri(db_url)
-
-    agent_executor = create_sql_agent(
-        llm=llm,
-        db=db,
-        agent_type="openai-tools",
-        prefix=prefix,
-        verbose=False,
-        agent_executor_kwargs={"max_iterations": 5},
+        request_timeout=60,
     )
 
     await log.ainfo("generating_sql", nl_query=nl_query)
-    result = await agent_executor.ainvoke(
-        {"input": nl_query},
-        config={"configurable": {"timeout": 120}},
-    )
-    raw_output = result.get("output", "")
 
-    # Extract SQL from response — agent may wrap it in markdown
+    response = await llm.ainvoke([
+        SystemMessage(content=system_prompt),
+        HumanMessage(content=nl_query),
+    ])
+
+    raw_output = response.content
+
+    # Extract SQL from response — LLM may wrap it in markdown
     sql = _extract_sql(raw_output)
     if not _looks_like_sql_query(sql):
         raise NL2SQLGenerationError(
