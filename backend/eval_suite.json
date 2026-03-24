@@ -1,0 +1,27 @@
+[
+  {
+    "question": "How many employees are there?",
+    "expected_sql": "SELECT COUNT(*) FROM sample_employees",
+    "expected_row_count": 1
+  },
+  {
+    "question": "List all employees in Engineering",
+    "expected_sql": "SELECT * FROM sample_employees WHERE department = 'Engineering' LIMIT 1000",
+    "expected_columns": ["id", "name", "department", "salary", "hire_date", "is_active"]
+  },
+  {
+    "question": "What is the average salary by department?",
+    "expected_sql": "SELECT department, AVG(salary) as avg_salary FROM sample_employees GROUP BY department",
+    "expected_row_count_range": [1, 10]
+  },
+  {
+    "question": "Who earns the most?",
+    "expected_sql": "SELECT name, salary FROM sample_employees ORDER BY salary DESC LIMIT 1",
+    "expected_row_count": 1
+  },
+  {
+    "question": "How many active employees per department?",
+    "expected_sql": "SELECT department, COUNT(*) as count FROM sample_employees WHERE is_active = true GROUP BY department",
+    "expected_row_count_range": [1, 10]
+  }
+]
