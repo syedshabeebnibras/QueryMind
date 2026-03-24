@@ -78,7 +78,7 @@ async def generate_sql(
     prefix = _SYSTEM_PREFIX + schema_section + few_shot_text
 
     llm = ChatOpenAI(
-        model="gpt-4o-mini",
+        model="gpt-4o",
         temperature=0,
         api_key=settings.openai_api_key,
     )
