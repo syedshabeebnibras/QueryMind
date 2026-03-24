@@ -99,7 +99,13 @@ async def run_query_pipeline(request: QueryRequest, db: AsyncSession) -> QueryRe
 
         try:
             # --- Stage 1: Generate SQL ---
-            error_context = f"\nPrevious error: {last_error}" if last_error else ""
+            error_context = ""
+            if last_error and attempted_sqls:
+                error_context = (
+                    f"\n\nYour previous SQL attempt:\n{attempted_sqls[-1]}\n"
+                    f"Failed with error: {last_error}\n"
+                    f"Fix the SQL to resolve this error."
+                )
             augmented_query = request.nl_query + error_context
 
             raw_sql = await generate_sql(
