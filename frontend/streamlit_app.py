@@ -370,7 +370,11 @@ if run_button and nl_query.strip():
                             st.code(sql, language="sql")
 
         except Exception as e:
-            st.error(f"Error: {e}")
+            error_msg = str(e) if str(e) else repr(e)
+            st.error(f"Error: {error_msg}")
+            import traceback
+            with st.expander("Debug details"):
+                st.code(traceback.format_exc())
 
 elif run_button:
     st.warning("Please enter a question first.")

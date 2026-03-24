@@ -6,7 +6,7 @@ from typing import Any
 import httpx
 
 BACKEND_URL = os.environ.get("BACKEND_URL", "http://localhost:8000")
-TIMEOUT = 120.0  # NL→SQL can be slow
+TIMEOUT = 300.0  # NL→SQL can be slow, especially complex multi-table queries
 
 
 async def run_query(
